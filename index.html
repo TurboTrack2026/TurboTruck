@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Neon Cyber</title>
+    <title>Turbo Track - Premium Neon</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -170,10 +170,6 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             text-shadow: 0 0 5px #00e5ff;
-            transition: all 0.2s;
-        }
-        .menu-btn:active {
-            transform: scale(0.96);
         }
         #restartBtn { 
             border-color: #ff2255; 
@@ -190,20 +186,21 @@
             display: none;
             align-items: center;
             justify-content: center;
-            background: rgba(3, 5, 8, 0.85);
+            background: rgba(3, 5, 8, 0.9);
             z-index: 9;
         }
+        /* طراحی نئونی فوق‌العاده جذاب اعداد شمارش معکوس */
         #countdownText {
-            font-size: 260px; 
+            font-size: 240px; 
             font-weight: 900;
-            color: #facc15; 
+            color: #00ffff; 
             opacity: 0;
-            text-shadow: 0 0 40px rgba(250, 204, 21, 0.6);
-            transform: scale(1.6);
-            transition: transform 0.35s ease-out, opacity 0.35s ease-out;
+            text-shadow: 0 0 20px #00e5ff, 0 0 40px #00e5ff, 0 0 8px #ffffff;
+            transform: scale(0.5);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease-out;
         }
         #countdownText.animate {
-            transform: scale(1);
+            transform: scale(1.1);
             opacity: 1;
         }
 
@@ -227,7 +224,6 @@
             text-align: center;
             width: 85%;
             direction: rtl;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
         #rewardToast.show {
             opacity: 1;
@@ -261,7 +257,6 @@
         .error-icon {
             font-size: 65px;
             margin-bottom: 25px;
-            filter: drop-shadow(0 0 10px #ef4444);
         }
         .error-title-en {
             color: #ffffff;
@@ -269,7 +264,6 @@
             font-weight: 900;
             margin-bottom: 15px;
             text-transform: uppercase;
-            letter-spacing: 1px;
             text-shadow: 0 0 8px #ef4444;
         }
         .error-desc-en {
@@ -395,9 +389,10 @@ resizeCanvas();
 
 const player = {
     x: canvas.width / 2,
+    targetX: canvas.width / 2, // اضافه شدن متغیر تارگت برای حرکت کاملا روان و بدون گیر
     y: 520,
-    width: 48,
-    height: 76,
+    width: 52,
+    height: 84,
     movingLeft: false,
     movingRight: false,
     speed: 580 
@@ -455,20 +450,20 @@ function playRewardSound() {
 
 const stageJobs = [
     { key: 'ambulance', name: 'AMBU', type: 'STANDARD', color: '#ff2a55' },
-    { key: 'taxi', name: 'TAXI', type: 'STANDARD', color: '#ffcc00' },
+    { key: 'taxi', name: 'TAXI', type: 'STANDARD', color: '#facc15' },
     { key: 'police', name: 'POLICE', type: 'SPEED_OBSTACLE', color: '#2b66ff' }, 
-    { key: 'motor', name: 'MOTO', type: 'BIKE', color: '#00ff66' },     
-    { key: 'bicycle', name: 'BIKE', type: 'BIKE', color: '#ff00aa' },     
-    { key: 'racecar', name: 'RACE', type: 'SPEED_OBSTACLE', color: '#ff6600' },       
-    { key: 'personal', name: 'CAR', type: 'STANDARD', color: '#b533ff' },             
+    { key: 'motor', name: 'MOTO', type: 'BIKE', color: '#10b981' },     
+    { key: 'bicycle', name: 'BIKE', type: 'BIKE', color: '#ec4899' },     
+    { key: 'racecar', name: 'RACE', type: 'SPEED_OBSTACLE', color: '#f97316' },       
+    { key: 'personal', name: 'CAR', type: 'STANDARD', color: '#a855f7' },             
     { key: 'truck', name: 'TRUCK', type: 'BIG_SIZE', color: '#3b82f6' },             
-    { key: 'garbage', name: 'GARB', type: 'BIG_SIZE', color: '#10b981' },             
-    { key: 'fire', name: 'FIRE', type: 'CHAOS', color: '#ef4444' }             
+    { key: 'garbage', name: 'GARB', type: 'BIG_SIZE', color: '#059669' },             
+    { key: 'fire', name: 'FIRE', type: 'CHAOS', color: '#dc2626' }             
 ];
 
 const carCache = {};
 
-// تابع طراحی مجدد ماشین‌ها: کاملاً حرفه‌ای، نئونی، زیبا و مطابق فرم عکس ارسالی شما
+// تابع نقاشی ۱۰۰٪ منطبق با تصویر دوم: سایه‌روشن بدنه، آج تایرها، چراغ‌های باریک عقب و سه بعدی جلو
 function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     const offCanvas = document.createElement('canvas');
     offCanvas.width = width + 30;
@@ -481,100 +476,126 @@ function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     const bodyW = isBike ? width * 0.55 : width * 0.92;
     const bodyH = height;
 
-    // ۱. سایه گرافیکی نرم زیر ماشین برای بعد دادن
-    octx.fillStyle = 'rgba(0, 0, 0, 0.4)';
-    octx.beginPath();
-    octx.arc(0, 10, bodyW * 0.7, 0, Math.PI * 2);
-    octx.fill();
+    // ۱. سایه سه‌بعدی زیر ماشین
+    octx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    octx.shadowBlur = 10;
+    octx.shadowOffsetY = 6;
 
-    // ۲. لاستیک‌های خاکستری شیک با خطوط داخلی مجزا (دقیقاً مثل الگوی ارسالی)
-    octx.fillStyle = '#64748b'; 
-    octx.strokeStyle = '#090d14';
-    octx.lineWidth = 2.5;
+    // ۲. طراحی فوق حرفه‌ای تایرها با آج‌های افقی (دقیقاً مطابق تصویر دوم)
+    octx.fillStyle = '#2d3748'; 
+    octx.strokeStyle = '#1a202c';
+    octx.lineWidth = 1.5;
 
     if (!isBike) {
-        const tW = 8;
-        const tH = 18;
-        const offX = width / 2;
-        const offY = height / 2 - 12;
+        const tW = 10;
+        const tH = 22;
+        const offX = width / 2 + 1;
+        const offY = height / 2 - 14;
 
-        // تایر جلو چپ
-        octx.fillRect(-offX - 2, -offY, tW, tH); octx.strokeRect(-offX - 2, -offY, tW, tH);
-        // تایر جلو راست
-        octx.fillRect(offX - 6, -offY, tW, tH); octx.strokeRect(offX - 6, -offY, tW, tH);
-        // تایر عقب چپ
-        octx.fillRect(-offX - 2, offY - 4, tW, tH); octx.strokeRect(-offX - 2, offY - 4, tW, tH);
-        // تایر عقب راست
-        octx.fillRect(offX - 6, offY - 4, tW, tH); octx.strokeRect(offX - 6, offY - 4, tW, tH);
+        const drawTireWithTreads = (tx, ty) => {
+            octx.save();
+            octx.shadowBlur = 0; octx.shadowOffsetY = 0;
+            octx.fillStyle = '#1e293b';
+            octx.fillRect(tx, ty, tW, tH);
+            octx.strokeRect(tx, ty, tW, tH);
+            // رسم آج‌های تایر موجود در عکس
+            octx.strokeStyle = '#475569';
+            octx.lineWidth = 1;
+            for (let lineY = ty + 3; lineY < ty + tH; lineY += 4) {
+                octx.beginPath(); octx.moveTo(tx, lineY); octx.lineTo(tx + tW, lineY); octx.stroke();
+            }
+            octx.restore();
+        };
 
-        // اضافه کردن رینگ داخلی نئونی کوچک به چرخ‌ها
-        octx.fillStyle = color;
-        octx.fillRect(-offX, -offY + 5, 2, 8);
-        octx.fillRect(offX - 2, -offY + 5, 2, 8);
+        drawTireWithTreads(-offX - 3, -offY);       // جلو چپ
+        drawTireWithTreads(offX - 7, -offY);        // جلو راست
+        drawTireWithTreads(-offX - 3, offY - 4);    // عقب چپ
+        drawTireWithTreads(offX - 7, offY - 4);     // عقب راست
     } else {
-        octx.fillRect(-3, -bodyH/2 + 4, 6, 16); octx.strokeRect(-3, -bodyH/2 + 4, 6, 16);
-        octx.fillRect(-3, bodyH/2 - 20, 6, 16); octx.strokeRect(-3, bodyH/2 - 20, 6, 16);
+        octx.fillRect(-3, -bodyH/2 + 4, 6, 18);
+        octx.fillRect(-3, bodyH/2 - 22, 6, 18);
     }
 
-    // ۳. بدنه آیرودینامیک باکیفیت و منحنی با گرادیان رنگی نئونی
-    let grad = octx.createLinearGradient(0, -bodyH/2, 0, bodyH/2);
-    grad.addColorStop(0, color);
-    grad.addColorStop(1, '#090e15');
+    // ۳. بدنه یکپارچه لوکس با منحنی‌های دقیق و گرادیان سایه‌روشن (مشابه تصویر دوم)
+    let bodyGrad = octx.createLinearGradient(-bodyW/2, 0, bodyW/2, 0);
+    bodyGrad.addColorStop(0, color);
+    bodyGrad.addColorStop(0.3, color);
+    bodyGrad.addColorStop(0.5, '#ffffff'); // هایلایت مرکزی براق بدنه
+    bodyGrad.addColorStop(0.7, color);
+    bodyGrad.addColorStop(1, '#0f172a');
 
-    octx.fillStyle = grad;
+    octx.fillStyle = bodyGrad;
     octx.beginPath();
-    octx.moveTo(-bodyW / 2, -bodyH / 2 + 14);
-    octx.bezierCurveTo(-bodyW / 2, -bodyH / 2 - 4, bodyW / 2, -bodyH / 2 - 4, bodyW / 2, -bodyH / 2 + 14);
-    octx.lineTo(bodyW / 2, bodyH / 2 - 14);
-    octx.bezierCurveTo(bodyW / 2, bodyH / 2 + 4, -bodyW / 2, bodyH / 2 + 4, -bodyW / 2, bodyH / 2 - 14);
+    octx.moveTo(-bodyW / 2, -bodyH / 2 + 16);
+    octx.bezierCurveTo(-bodyW / 2, -bodyH / 2 - 4, bodyW / 2, -bodyH / 2 - 4, bodyW / 2, -bodyH / 2 + 16);
+    octx.lineTo(bodyW / 2, bodyH / 2 - 16);
+    octx.bezierCurveTo(bodyW / 2, bodyH / 2 + 6, -bodyW / 2, bodyH / 2 + 6, -bodyW / 2, bodyH / 2 - 16);
     octx.closePath();
     octx.fill();
 
-    // خط دور بدنه مشکی پررنگ و حرفه‌ای
-    octx.strokeStyle = '#05070a';
-    octx.lineWidth = 3;
+    // خط دور مشکی ظریف بدنه
+    octx.strokeStyle = '#0f172a';
+    octx.lineWidth = 2;
     octx.stroke();
 
-    // ۴. شیشه دودی لوکس و چندلایه با رفلکس نئونی سفید متقاطع
+    // ۴. خطوط آیرودینامیک ظریف کاپوت (دقیقاً مثل الگو)
+    octx.save();
+    octx.shadowBlur = 0; octx.shadowOffsetY = 0;
+    octx.strokeStyle = 'rgba(255,255,255,0.25)';
+    octx.lineWidth = 1.5;
+    octx.beginPath();
+    octx.moveTo(-bodyW/3, -bodyH/2 + 4); octx.lineTo(-bodyW/6, -bodyH/4);
+    octx.moveTo(bodyW/3, -bodyH/2 + 4); octx.lineTo(bodyW/6, -bodyH/4);
+    octx.stroke();
+
+    // ۵. شیشه بزرگ دودی با انحنای ارگونومیک عمیق
     const winW = bodyW * 0.78;
-    const winH = bodyH * 0.48;
-    const winY = -bodyH * 0.10;
+    const winH = bodyH * 0.50;
+    const winY = -bodyH * 0.08;
 
-    octx.fillStyle = '#0f172a';
+    let winGrad = octx.createLinearGradient(0, winY, 0, winY + winH);
+    winGrad.addColorStop(0, '#1e293b');
+    winGrad.addColorStop(1, '#0f172a');
+    octx.fillStyle = winGrad;
+    
     octx.beginPath();
-    octx.moveTo(-winW / 2, winY + 12);
-    octx.bezierCurveTo(-winW / 2, winY - 4, winW / 2, winY - 4, winW / 2, winY + 12);
-    octx.bezierCurveTo(winW / 2, winY + winH, -winW / 2, winY + winH, -winW / 2, winY + 12);
+    octx.moveTo(-winW / 2, winY + 14);
+    octx.bezierCurveTo(-winW / 2, winY - 4, winW / 2, winY - 4, winW / 2, winY + 14);
+    octx.bezierCurveTo(winW / 2, winY + winH, -winW / 2, winY + winH, -winW / 2, winY + 14);
     octx.closePath();
     octx.fill();
-    octx.strokeStyle = '#05070a';
-    octx.lineWidth = 2.5;
+    octx.strokeStyle = '#090d16';
+    octx.lineWidth = 2;
     octx.stroke();
 
-    // خط رفلکس براق روی شیشه
-    octx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-    octx.lineWidth = 2.5;
-    octx.beginPath();
-    octx.arc(-winW/3, winY + 6, 7, Math.PI, Math.PI * 1.5);
-    octx.stroke();
-
-    // ۵. چراغ‌های نئونی زنون جلو و نئون خطی قرمز عقب
+    // ۶. چراغ‌های جلو کپسولی شیشه‌ای با انعکاس براق خیره‌کننده
     if (!isBike) {
-        octx.fillStyle = '#ffffff';
-        octx.fillRect(-bodyW/2 + 1, -bodyH/2 + 3, 8, 4);
-        octx.fillRect(bodyW/2 - 9, -bodyH/2 + 3, 8, 4);
+        octx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        octx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+        octx.lineWidth = 1;
+        
+        // چراغ جلو چپ
+        octx.beginPath(); octx.ellipse(-bodyW/2 + 6, -bodyH/2 + 8, 5, 8, -Math.PI/6, 0, Math.PI*2); octx.fill(); octx.stroke();
+        // چراغ جلو راست
+        octx.beginPath(); octx.ellipse(bodyW/2 - 6, -bodyH/2 + 8, 5, 8, Math.PI/6, 0, Math.PI*2); octx.fill(); octx.stroke();
 
-        octx.fillStyle = '#ff1e56';
-        octx.fillRect(-bodyW/2 + 2, bodyH/2 - 4, 11, 4);
-        octx.fillRect(bodyW/2 - 13, bodyH/2 - 4, 11, 4);
+        // ۷. دو نوار نئونی منحنی قرمز و باریک عقب (دقیقاً مثل تصویر دوم)
+        octx.strokeStyle = '#ff003c';
+        octx.lineWidth = 3.5;
+        octx.lineCap = 'round';
+        // خط عقب چپ
+        octx.beginPath(); octx.moveTo(-bodyW/2 + 5, bodyH/2 - 4); octx.quadraticCurveTo(-bodyW/3, bodyH/2 - 2, -bodyW/4, bodyH/2 - 4); octx.stroke();
+        // خط عقب راست
+        octx.beginPath(); octx.moveTo(bodyW/2 - 5, bodyH/2 - 4); octx.quadraticCurveTo(bodyW/3, bodyH/2 - 2, bodyW/4, bodyH/2 - 4); octx.stroke();
     }
 
-    // ۶. فونت اسم ماشین با وضوح بالا
+    // متن نام خودرو وسط شیشه
     octx.fillStyle = '#ffffff';
-    octx.font = '900 11px sans-serif';
+    octx.font = '900 12px sans-serif';
     octx.textAlign = 'center';
     octx.textBaseline = 'middle';
     octx.fillText(name, 0, winY + winH / 2);
+    octx.restore();
 
     carCache[cacheKey] = offCanvas;
 }
@@ -815,7 +836,7 @@ function startCountdown() {
             void countdownText.offsetWidth; 
             countdownText.classList.add('animate');
             current++;
-            setTimeout(nextTick, 750);
+            setTimeout(nextTick, 800);
         } else {
             countdownOverlay.style.display = 'none';
             playBeep();
@@ -851,7 +872,9 @@ function resetGame() {
     updateScoreUI();
     
     resizeCanvas();
-    player.x = canvas.width / 2; player.y = 520; 
+    player.x = canvas.width / 2; 
+    player.targetX = canvas.width / 2;
+    player.y = 520; 
     enemies = []; particles = []; enemySpawnTimer = -0.1;
     initScenery();
     startCountdown();
@@ -870,8 +893,18 @@ function loop(currentTime) {
     drawRoad(dt);
 
     if (isPlaying && !isPaused && !isBurning) {
-        if (player.movingLeft) player.x -= player.speed * dt;
-        if (player.movingRight) player.x += player.speed * dt;
+        // اعمال محاسبات درون‌یابی خطی (Lerp) برای حذف کامل کوچکترین گیر در حرکت ماشین
+        if (player.movingLeft) player.targetX -= player.speed * dt;
+        if (player.movingRight) player.targetX += player.speed * dt;
+        
+        // محدود کردن مرزهای حرکت خودرو درون جاده
+        const leftLimit = canvas.width * 0.08 + player.width/2;
+        const rightLimit = canvas.width * 0.92 - player.width/2;
+        if (player.targetX < leftLimit) player.targetX = leftLimit;
+        if (player.targetX > rightLimit) player.targetX = rightLimit;
+
+        // فرمول اصلی جابه‌جایی پیوسته بدون تیک
+        player.x += (player.targetX - player.x) * 0.35;
     }
 
     if (!isBurning) {
@@ -890,7 +923,7 @@ function loop(currentTime) {
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
 
-// بازنویسی و ایزوله‌سازی رویدادهای لمسی گوشی برای رفع ۱۰۰٪ لگِ دکمه‌های جابه‌جایی خودرو
+// مدیریت فوق‌العاده دقیق تاچ بدون تداخل جهت رفع کامل کوچکترین تیک حرکتی
 btnLeft.addEventListener('touchstart', (e) => { 
     e.preventDefault(); 
     if(!isPaused && !isBurning) { player.movingLeft = true; playClickSound(); } 
@@ -909,7 +942,7 @@ btnRight.addEventListener('touchend', (e) => {
     player.movingRight = false;
 }, { passive: false });
 
-// هندلرهای بک‌آپ برای دسکتاپ و ماوس بدون تداخل با تاچ گوشی
+// هندلرهای بک‌آپ ماوس مخصوص سیستم دسکتاپ
 btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; } });
 btnLeft.addEventListener('mouseup', () => player.movingLeft = false);
 btnLeft.addEventListener('mouseleave', () => player.movingLeft = false);
@@ -923,7 +956,9 @@ restartBtn.addEventListener('click', resetGame);
 window.addEventListener('load', () => {
     resizeCanvas();
     generateAllCarCaches(); 
-    player.x = canvas.width / 2; player.y = 520;
+    player.x = canvas.width / 2;
+    player.targetX = canvas.width / 2;
+    player.y = 520;
     initScenery();
 });
 </script>
