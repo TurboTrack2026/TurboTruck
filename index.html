@@ -35,10 +35,6 @@
             width: 100%;
             height: 100%;
             display: block;
-            /* بهینه‌سازی رندر سخت‌افزاری برای روان‌تر شدن بازی */
-            will-change: transform;
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
         }
         
         #topBar {
@@ -95,7 +91,7 @@
             align-items: center;
             width: 100%;
             position: absolute;
-            bottom: 40px; /* دکمه‌ها پایین‌تر آورده شدند تا دسترسی راحت‌تر شود */
+            bottom: 110px; /* بازگشت دقیق به موقعیت و ارتفاع سابق */
             padding: 0 25px;
             pointer-events: none;
             z-index: 5;
@@ -215,14 +211,14 @@
             transform: translateX(-50%) scale(1);
         }
 
-        /* صفحه اختصاصی خطای دسترسی لاکچری و باکلاس */
+        /* صفحه اختصاصی خطای دسترسی کاملاً انگلیسی، لاکچری و بدون دکمه */
         #authErrorScreen {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #07090e 0%, #0d131f 100%);
+            background: linear-gradient(135deg, #06080c 0%, #0b101a 100%);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -233,42 +229,40 @@
             box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
         }
         .error-card {
-            background: rgba(15, 21, 32, 0.7);
-            border: 1px solid rgba(255, 34, 34, 0.25);
-            border-radius: 24px;
-            padding: 40px 30px;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 34, 34, 0.05);
-            max-width: 400px;
+            background: rgba(15, 22, 36, 0.65);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 28px;
+            padding: 50px 35px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 50px rgba(239, 68, 68, 0.03);
+            max-width: 420px;
             width: 100%;
         }
         .error-icon {
-            font-size: 54px;
-            margin-bottom: 25px;
-            filter: drop-shadow(0 0 15px rgba(255, 34, 34, 0.6));
-            animation: pulse 2s infinite ease-in-out;
+            font-size: 60px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.5));
+            animation: pulseCard 2.5s infinite ease-in-out;
         }
-        .error-msg-fa {
+        .error-title-en {
             color: #ffffff;
-            font-size: 19px;
+            font-size: 22px;
             font-weight: 800;
-            margin-bottom: 14px;
-            letter-spacing: 0.3px;
-            line-height: 1.6;
-            direction: rtl;
-        }
-        .error-msg-en {
-            color: #94a3b8;
-            font-size: 14px;
-            font-weight: 600;
             letter-spacing: 0.5px;
+            margin-bottom: 12px;
             text-transform: uppercase;
-            line-height: 1.4;
         }
-        @keyframes pulse {
+        .error-desc-en {
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.5;
+            letter-spacing: 0.2px;
+        }
+        @keyframes pulseCard {
             0%, 100% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.06); opacity: 1; filter: drop-shadow(0 0 25px rgba(255, 34, 34, 0.8)); }
+            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 30px rgba(239, 68, 68, 0.7)); }
         }
     </style>
 </head>
@@ -277,9 +271,9 @@
 <div id="gameContainer">
     <div id="authErrorScreen">
         <div class="error-card">
-            <div class="error-icon">❌</div>
-            <div class="error-msg-fa">شما اجازه ی ورود به بازی رو ندارید</div>
-            <div class="error-msg-en">You do not have permission to enter the game</div>
+            <div class="error-icon">🔒</div>
+            <div class="error-title-en">Access Denied</div>
+            <div class="error-desc-en">You do not have permission to enter the game</div>
         </div>
     </div>
 
@@ -319,41 +313,39 @@
 <script>
 // --- لیست آیدی‌های عددی مجاز تلگرام ---
 const ALLOWED_TELEGRAM_IDS = [
-    123456789, // آیدی عددی کاربران مجاز را اینجا به صورت دقیق وارد کنید
+    123456789, // آیدی عددی کاربران مجاز را اینجا جایگزین کنید
 ];
 
-// سیستم احراز هویت آیدی تلگرام کاملاً حساس و با دقت بالا
+// مکانیزم بسیار حساس و دقیق احراز هویت آیدی تلگرام
 function verifyTelegramAccess() {
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    // استخراج دقیق اطلاعات کاربر تلگرام از محیط امن مینی‌اپ
     const user = tg.initDataUnsafe?.user;
     const authErrorScreen = document.getElementById('authErrorScreen');
     const welcomeScreen = document.getElementById('welcomeScreen');
 
     if (user && typeof user.id !== 'undefined') {
-        // تبدیل کردن به عدد برای اطمینان از صحت مقایسه منطقی
         const currentUserId = Number(user.id);
         
         if (ALLOWED_TELEGRAM_IDS.includes(currentUserId)) {
-            // کاربر مجاز است: صفحه خطا کاملاً مخفی شده و صفحه ورود استارت ظاهر می‌شود
+            // آیدی معتبر است: ورود مستقیم بدون نمایش خطا
             authErrorScreen.style.display = 'none';
             welcomeScreen.style.display = 'flex';
         } else {
-            // کاربر غیرمجاز است: قفل کامل و نمایش صفحه خطا
+            // آیدی نامعتبر است: قفل کامل روی صفحه خطا بدون هیچ دکمه‌ای
             authErrorScreen.style.display = 'flex';
             welcomeScreen.style.display = 'none';
         }
     } else {
-        // اگر بازی خارج از بستر مینی‌اپ تلگرام باز شده باشد
+        // خارج از مینی‌اپ تلگرام
         authErrorScreen.style.display = 'flex';
         welcomeScreen.style.display = 'none';
     }
 }
 
-// چک امنیتی بلافاصله در هنگام بالا آمدن سند بازی اجرا می‌گردد
+// اجرای آنی چک امنیتی هنگام لود شدن صفحه
 window.addEventListener('load', verifyTelegramAccess);
 
 const canvas = document.getElementById('gameCanvas');
@@ -434,7 +426,7 @@ function playRewardSound() {
     });
 }
 
-// لیست مراحل فیکس با مدل و رنگ ثابت
+// لیست مراحل فیکس با مدل، نام و رنگ کاملاً بدون تغییر
 const stageJobs = [
     { key: 'ambulance', name: 'AMBU', type: 'STANDARD', color: '#d32f2f' },
     { key: 'taxi', name: 'TAXI', type: 'STANDARD', color: '#fbc02d' },
@@ -792,13 +784,12 @@ function resetGame() {
     startCountdown();
 }
 
-// حلقه اصلی بازی با استفاده از ساختار زمان‌بندی دقیق و DeltaTime ثابت جهت رفع هرگونه لگ و گیرکردن
+// اصلی‌ترین بخش بهینه‌سازی: حذف کامل فیلترها و محدودیت‌های زمان‌بندی مصنوعی جهت اجرای ۱۰۰٪ روان و بدون لکنت بازی
 function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
+    // محاسبه گام زمان کاملاً پویا و متناسب با نرخ نوسازی مانیتور بدون هیچ‌گونه فیکس‌کردن عددی گیردار
     let dt = (currentTime - lastTime) / 1000;
-    // محدود کردن حداکثر گام زمانی برای همگام‌سازی مانیتورهای نرخ نوسازی بالا (نظیر 90Hz و 120Hz) و حذف کامل لرزش تصاویر
-    if (dt > 0.1) dt = 0.1;
     lastTime = currentTime;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
