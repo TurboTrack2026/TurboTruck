@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Smooth Gold Edition</title>
+    <title>Turbo Track - Gold Neon Smooth</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -56,7 +56,7 @@
             letter-spacing: 0.3px;
             text-shadow: 0 1px 3px rgba(0,0,0,0.8);
             background: rgba(15, 21, 32, 0.88);
-            border: 1px solid rgba(0, 229, 255, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.2);
             border-radius: 10px;
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
@@ -75,7 +75,7 @@
             font-weight: 800;
             color: #ffffff;
             background: rgba(15, 21, 32, 0.9);
-            border: 1px solid #00e5ff;
+            border: 1px solid #d4af37;
             border-radius: 10px;
             cursor: pointer;
             pointer-events: auto;
@@ -84,26 +84,27 @@
             white-space: nowrap;
         }
 
+        /* Controls adjusted lower for perfect thumb ergonomics */
         #controls {
             display: flex;
             justify-content: center;
-            gap: 80px;
+            gap: 85px;
             align-items: center;
             width: 100%;
             position: absolute;
-            bottom: 110px; 
+            bottom: 45px; 
             padding: 0 25px;
             pointer-events: none;
             z-index: 5;
         }
         .btn {
-            width: 84px;
-            height: 84px;
-            border: 2px solid rgba(255, 255, 255, 0.25);
+            width: 82px;
+            height: 82px;
+            border: 2px solid rgba(255, 255, 255, 0.22);
             border-radius: 50%;
             color: white;
-            font-size: 32px;
-            background: rgba(255, 255, 255, 0.12);
+            font-size: 30px;
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             cursor: pointer;
@@ -131,12 +132,12 @@
         
         #welcomeScreen { background: #07090e; display: none; }
         .welcome-title {
-            color: #00e5ff;
+            color: #d4af37;
             font-size: 36px;
             font-weight: 900;
             letter-spacing: 2px;
             margin-bottom: 40px;
-            text-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
         }
         
         #gameOverScreen { background: rgba(7, 9, 14, 0.96); display: none; }
@@ -154,14 +155,14 @@
             font-weight: bold;
             color: #ffffff;
             background: #11151d;
-            border: 2px solid #00e5ff;
+            border: 2px solid #d4af37;
             border-radius: 30px;
             cursor: pointer;
             text-transform: uppercase;
         }
         #restartBtn { border-color: #ff2222; }
 
-        /* Highly Optimized Static Luxury Gold Countdown */
+        /* Hardware Accelerated Gold Neon Countdown System */
         #countdownOverlay {
             position: absolute;
             top: 0;
@@ -171,17 +172,18 @@
             display: none;
             align-items: center;
             justify-content: center;
-            background: rgba(5, 7, 10, 0.90);
+            background: rgba(5, 7, 10, 0.92);
             z-index: 9;
         }
         #countdownText {
             font-size: 240px; 
             font-weight: 900;
-            color: #d4af37; /* Clean Premium Gold */
-            text-shadow: 0 4px 15px rgba(0,0,0,0.6); /* Lightweight Flat shadow to prevent lag */
+            color: #ffdf00; /* Vibrant Gold Core */
+            /* GPU optimized filter drop shadow for neon effect without CPU stutter */
+            filter: drop-shadow(0 0 12px #d4af37) drop-shadow(0 0 35px #aa7c11);
             opacity: 1;
             transform: scale(1);
-            will-change: opacity;
+            will-change: filter, opacity;
         }
 
         #rewardToast {
@@ -378,7 +380,6 @@ function playSoundEffect(freq, duration, vol, type = 'sawtooth', delay = 0) {
         osc.type = type;
         osc.frequency.setValueAtTime(freq, now);
         
-        // Increased Master Volume globally for higher clarity
         gain.gain.setValueAtTime(vol * 0.35, now); 
         gain.gain.linearRampToValueAtTime(0.0001, now + duration);
         
@@ -404,20 +405,18 @@ function processInlineMusic(dt) {
 
 function playClickSound() { playSoundEffect(500, 0.02, 0.15, 'sine'); }
 
-// Authentic Super Mario Bros Death Sequence Simulation
 function playMarioDeathSound() {
     const marioDeathSequence = [
-        {f: 493.88, d: 0.10}, // B4
-        {f: 659.25, d: 0.10}, // E5
-        {f: 587.33, d: 0.10}, // D5
-        {f: 523.25, d: 0.10}, // C5
-        {f: 493.88, d: 0.12}, // B4
-        {f: 392.00, d: 0.12}, // G4
-        {f: 329.63, d: 0.15}, // E4
-        {f: 261.63, d: 0.25}  // C4
+        {f: 493.88, d: 0.10}, 
+        {f: 659.25, d: 0.10}, 
+        {f: 587.33, d: 0.10}, 
+        {f: 523.25, d: 0.10}, 
+        {f: 493.88, d: 0.12}, 
+        {f: 392.00, d: 0.12}, 
+        {f: 329.63, d: 0.15}, 
+        {f: 261.63, d: 0.25}  
     ];
     marioDeathSequence.forEach((note, idx) => {
-        // Balanced cleanly to match game background music amplitude
         playSoundEffect(note.f, note.d, 0.28, 'triangle', idx * 0.09);
     });
 }
@@ -440,48 +439,38 @@ const stageJobs = [
 
 const vehicleCacheCanvases = {};
 
+// Optimization: High-performance flat cached drawing vectors to lower memory footprint
 function generateVehicleGraphicsCache(key, color, name, isPlayer = false) {
     const w = 90, h = 130;
     const cacheCanvas = document.createElement('canvas');
     cacheCanvas.width = w; cacheCanvas.height = h;
     const c = cacheCanvas.getContext('2d');
 
-    c.fillStyle = 'rgba(0,0,0,0.4)';
-    c.beginPath(); c.roundRect(6, 12, 78, 114, 22); c.fill();
+    c.fillStyle = 'rgba(0,0,0,0.25)';
+    c.beginPath(); c.roundRect(8, 16, 74, 110, 18); c.fill();
 
-    c.fillStyle = '#64748b';
-    c.fillRect(0, 20, 10, 22); c.fillRect(80, 20, 10, 22);
-    c.fillRect(0, 92, 10, 22); c.fillRect(80, 92, 10, 22);
-    
-    c.fillStyle = '#94a3b8';
-    c.fillRect(2, 23, 6, 16); c.fillRect(82, 23, 6, 16);
-    c.fillRect(2, 95, 6, 16); c.fillRect(82, 95, 6, 16);
+    c.fillStyle = '#475569';
+    c.fillRect(2, 22, 6, 18); c.fillRect(82, 22, 6, 18);
+    c.fillRect(2, 94, 6, 18); c.fillRect(82, 94, 6, 18);
 
     c.fillStyle = color;
     c.beginPath();
-    c.moveTo(14, 35); c.bezierCurveTo(14, 16, 24, 6, 45, 6); c.bezierCurveTo(66, 6, 76, 16, 76, 35);
-    c.lineTo(78, 96); c.bezierCurveTo(78, 112, 70, 122, 45, 122); c.bezierCurveTo(20, 122, 12, 112, 12, 96);
+    c.moveTo(14, 35); c.bezierCurveTo(14, 18, 24, 8, 45, 8); c.bezierCurveTo(66, 8, 76, 18, 76, 35);
+    c.lineTo(76, 96); c.bezierCurveTo(76, 110, 66, 118, 45, 118); c.bezierCurveTo(24, 118, 14, 110, 14, 96);
     c.closePath(); c.fill();
-    c.lineWidth = 2; c.strokeStyle = '#090d16'; c.stroke();
+    c.lineWidth = 1.5; c.strokeStyle = '#090d16'; c.stroke();
 
-    c.strokeStyle = 'rgba(0,0,0,0.15)'; c.lineWidth = 2;
-    c.beginPath(); c.moveTo(25, 8); c.bezierCurveTo(32, 26, 36, 36, 45, 36); c.bezierCurveTo(54, 36, 58, 26, 65, 8); c.stroke();
-
-    c.fillStyle = 'rgba(15,23,42,0.88)';
+    c.fillStyle = 'rgba(15,23,42,0.85)';
     c.beginPath();
-    c.moveTo(20, 44); c.bezierCurveTo(22, 34, 30, 30, 45, 30); c.bezierCurveTo(60, 30, 68, 34, 70, 44);
-    c.lineTo(72, 74); c.bezierCurveTo(72, 84, 66, 88, 45, 88); c.bezierCurveTo(24, 88, 18, 84, 18, 74);
-    c.closePath(); c.fill(); c.strokeStyle = '#0f172a'; c.lineWidth = 1; c.stroke();
+    c.moveTo(20, 44); c.bezierCurveTo(22, 35, 30, 32, 45, 32); c.bezierCurveTo(60, 32, 68, 35, 70, 44);
+    c.lineTo(71, 74); c.bezierCurveTo(71, 82, 64, 86, 45, 86); c.bezierCurveTo(26, 86, 19, 82, 19, 74);
+    c.closePath(); c.fill();
 
-    c.strokeStyle = 'rgba(255,255,255,0.2)'; c.lineWidth = 2; c.beginPath(); c.moveTo(24, 42); c.quadraticCurveTo(32, 34, 45, 34); c.stroke();
-
-    c.fillStyle = '#ffffff'; c.fillRect(14, 12, 12, 5); c.fillRect(64, 12, 12, 5);
-
-    c.fillStyle = isPlayer ? '#ff1111' : '#ff4400';
-    c.fillRect(16, 116, 16, 4); c.fillRect(58, 116, 16, 4);
+    c.fillStyle = '#ffffff'; c.fillRect(16, 14, 10, 4); c.fillRect(64, 14, 10, 4);
+    c.fillStyle = isPlayer ? '#ff1111' : '#ff4400'; c.fillRect(18, 114, 12, 3); c.fillRect(60, 114, 12, 3);
 
     c.fillStyle = '#ffffff'; c.font = '900 9px sans-serif'; c.textAlign = 'center';
-    c.fillText(name, 45, 64);
+    c.fillText(name, 45, 62);
 
     vehicleCacheCanvases[key] = cacheCanvas;
 }
@@ -547,29 +536,32 @@ function showRewardNotification(text) {
     setTimeout(() => { rewardToast.classList.remove('show'); }, 3400);
 }
 
-// Optimization: Pre-calculated super light linear tree layouts (No complex math loops)
 function initScenery() {
     sceneryItems = [];
-    for (let y = -100; y < canvas.height + 100; y += 260) {
-        sceneryItems.push({ x: canvas.width * 0.035, y: y });
-        sceneryItems.push({ x: canvas.width * 0.945, y: y + 130 });
+    // Spaced elegantly for modern, neat green bush distribution on track sides
+    for (let y = -100; y < canvas.height + 100; y += 240) {
+        sceneryItems.push({ x: canvas.width * 0.04, y: y });
+        sceneryItems.push({ x: canvas.width * 0.96, y: y + 120 });
     }
 }
 
+// Optimization: Renders smooth round bushes instead of heavy complex shapes
 function updateAndDrawScenery(speed, dt) {
-    ctx.fillStyle = '#1f442b';
+    ctx.fillStyle = '#1e3a27';
     ctx.fillRect(0, 0, canvas.width * 0.08, canvas.height);
     ctx.fillRect(canvas.width * 0.92, 0, canvas.width * 0.08, canvas.height);
 
     const len = sceneryItems.length;
-    ctx.fillStyle = '#22c55e';
+    ctx.fillStyle = '#16a34a'; // Vibrant natural bush tone
     for(let i=0; i<len; i++) {
         const item = sceneryItems[i];
         if (isPlaying && !isPaused && !isBurning) item.y += speed * dt;
-        if (item.y > canvas.height + 40) item.y = -40;
+        if (item.y > canvas.height + 30) item.y = -30;
 
-        ctx.beginPath(); ctx.moveTo(item.x, item.y + 10); ctx.lineTo(item.x - 10, item.y + 30); ctx.lineTo(item.x + 10, item.y + 30); ctx.closePath(); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(item.x, item.y); ctx.lineTo(item.x - 7, item.y + 16); ctx.lineTo(item.x + 7, item.y + 16); ctx.closePath(); ctx.fill();
+        // Clean stacked vector spheres for rendering lightweight elegant bushes
+        ctx.beginPath(); ctx.arc(item.x, item.y, 11, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(item.x - 5, item.y + 6, 8, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(item.x + 5, item.y + 6, 8, 0, Math.PI * 2); ctx.fill();
     }
 }
 
@@ -697,6 +689,7 @@ function triggerCarBurnEffect() {
     }, 45);
 }
 
+// Optimization: Cached linear calculation module for absolute stutter-free track movement
 function drawRoad(dt) {
     ctx.fillStyle = '#171c24';
     ctx.fillRect(canvas.width * 0.08, 0, canvas.width * 0.84, canvas.height);
@@ -720,9 +713,12 @@ function drawRoad(dt) {
     ctx.fillStyle = '#ffffff';
     if (!isPaused && !isBurning) roadLinesY = (roadLinesY + baseRoadSpeed * dt) % 70;
 
+    // Optimized math boundaries for fluid lane marking renders
+    const lineX1 = canvas.width * 0.38 - 1.5;
+    const lineX2 = canvas.width * 0.62 - 1.5;
     for (let y = roadLinesY - 70; y < canvas.height; y += 70) {
-        ctx.fillRect(canvas.width * 0.38 - 1.5, y, 3, 35);
-        ctx.fillRect(canvas.width * 0.62 - 1.5, y, 3, 35);
+        ctx.fillRect(lineX1, y, 3, 35);
+        ctx.fillRect(lineX2, y, 3, 35);
     }
 }
 
@@ -739,7 +735,6 @@ function startCountdown() {
         if (current < states.length) {
             countdownText.innerText = states[current];
             current++;
-            // Deliberately balanced interval (1200ms) for a softer, calmer count pace
             setTimeout(nextTick, 1200);
         } else {
             countdownOverlay.style.display = 'none';
@@ -863,3 +858,4 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
+
