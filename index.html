@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Turbo Track - Balanced Volume</title>
+    <!-- اسکریپت رسمی وب‌اپ تلگرام -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -128,21 +129,14 @@
             z-index: 10;
         }
         
-        #welcomeScreen { background: #07090e; display: none; text-align: center; padding: 20px; }
+        #welcomeScreen { background: #07090e; }
         .welcome-title {
-            color: #ff2222;
+            color: #00e5ff;
             font-size: 36px;
             font-weight: 900;
             letter-spacing: 2px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 25px rgba(255, 34, 34, 0.5);
-        }
-        .welcome-desc {
-            color: #e2e8f0;
-            font-size: 16px;
-            font-weight: 600;
-            line-height: 1.6;
-            max-width: 80%;
+            margin-bottom: 40px;
+            text-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
         }
         
         #gameOverScreen { background: rgba(7, 9, 14, 0.96); display: none; }
@@ -217,11 +211,76 @@
             opacity: 1;
             transform: translateX(-50%) scale(1);
         }
+
+        /* صفحه اختصاصی خطای دسترسی لاکچری و باکلاس */
+        #authErrorScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #07090e 0%, #0d131f 100%);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 30px;
+            text-align: center;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
+        }
+        .error-card {
+            background: rgba(15, 21, 32, 0.7);
+            border: 1px solid rgba(255, 34, 34, 0.25);
+            border-radius: 24px;
+            padding: 40px 30px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 34, 34, 0.05);
+            max-width: 400px;
+            width: 100%;
+        }
+        .error-icon {
+            font-size: 54px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 15px rgba(255, 34, 34, 0.6));
+            animation: pulse 2s infinite ease-in-out;
+        }
+        .error-msg-fa {
+            color: #ffffff;
+            font-size: 19px;
+            font-weight: 800;
+            margin-bottom: 14px;
+            letter-spacing: 0.3px;
+            line-height: 1.6;
+            direction: rtl;
+        }
+        .error-msg-en {
+            color: #94a3b8;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            line-height: 1.4;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.06); opacity: 1; filter: drop-shadow(0 0 25px rgba(255, 34, 34, 0.8)); }
+        }
     </style>
 </head>
 <body>
 
 <div id="gameContainer">
+    <!-- صفحه لاکچری خطای عدم اجازه ورود -->
+    <div id="authErrorScreen">
+        <div class="error-card">
+            <div class="error-icon">❌</div>
+            <div class="error-msg-fa">شما اجازه ی ورود به بازی رو ندارید</div>
+            <div class="error-msg-en">You do not have permission to enter the game</div>
+        </div>
+    </div>
+
     <canvas id="gameCanvas"></canvas>
     
     <div id="topBar">
@@ -241,8 +300,8 @@
     </div>
 
     <div id="welcomeScreen" class="screen-overlay">
-        <div class="welcome-title">ERROR</div>
-        <div class="welcome-desc">شما اجازه ی ورود ندارید</div>
+        <div class="welcome-title">TURBO TRACK</div>
+        <button id="startBtn" class="menu-btn">Start Race</button>
     </div>
 
     <div id="gameOverScreen" class="screen-overlay">
@@ -256,46 +315,41 @@
 </div>
 
 <script>
-// --- لیست آیدی‌های تلگرام مجاز ---
-const ALLOWED_USERS = [
-    2049044424, // آیدی‌های خود را اینجا وارد کنید
+// --- لیست آیدی‌های عددی مجاز تلگرام ---
+const ALLOWED_TELEGRAM_IDS = [
+    2049044424, // آیدی عددی خود را این‌جا جایگزین کنید
 ];
 
-const tg = window.Telegram.WebApp;
-const welcomeScreen = document.getElementById('welcomeScreen');
-
-// تابع بررسی اعتبار آیدی تلگرام کاربر
-function checkTelegramAuth() {
+// سیستم احراز هویت آیدی تلگرام
+function verifyTelegramAccess() {
+    const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    const user = tg.initDataUnsafe?.user;
+    const userId = tg.initDataUnsafe?.user?.id;
+    const authErrorScreen = document.getElementById('authErrorScreen');
 
-    if (user && user.id) {
-        if (ALLOWED_USERS.includes(user.id)) {
-            // آیدی مجاز است: صفحه خطا پنهان شده و مستقیما بازی استارت می‌خورد
-            welcomeScreen.style.display = 'none';
-            resetGame();
-        } else {
-            // آیدی غیرمجاز است: صفحه خطا و عدم اجازه ورود فعال می‌شود
-            welcomeScreen.style.display = 'flex';
-        }
+    if (userId && ALLOWED_TELEGRAM_IDS.includes(userId)) {
+        // آیدی معتبر است، بازی به حالت عادی لود می‌شود و خطایی نمایش داده نمی‌شود
+        authErrorScreen.style.display = 'none';
     } else {
-        // خارج از تلگرام
-        welcomeScreen.style.display = 'flex';
+        // آیدی نامعتبر است یا خارج از تلگرام باز شده، صفحه قفل و خطا نمایش داده می‌شود
+        authErrorScreen.style.display = 'flex';
     }
 }
 
-// اجرای بررسی خودکار به محض لود شدن کامل صفحه
-window.addEventListener('load', checkTelegramAuth);
+// اجرای چک امنیتی دقیقاً هنگام لود شدن پنجره بازی
+window.addEventListener('load', verifyTelegramAccess);
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = true;
 
+const welcomeScreen = document.getElementById('welcomeScreen');
 const gameOverScreen = document.getElementById('gameOverScreen');
 const countdownOverlay = document.getElementById('countdownOverlay');
 const countdownText = document.getElementById('countdownText');
+const startBtn = document.getElementById('startBtn');
 const restartBtn = document.getElementById('restartBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 
@@ -781,6 +835,7 @@ btnRight.addEventListener('touchend', (e) => {
     player.movingRight = false;
 }, { passive: false });
 
+startBtn.addEventListener('click', resetGame);
 restartBtn.addEventListener('click', resetGame);
 
 window.addEventListener('load', () => {
