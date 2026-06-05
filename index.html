@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Neon Speed</title>
+    <title>Turbo Track - Smooth Gold Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -161,7 +161,7 @@
         }
         #restartBtn { border-color: #ff2222; }
 
-        /* Neon & Static Countdown Configuration */
+        /* Highly Optimized Static Luxury Gold Countdown */
         #countdownOverlay {
             position: absolute;
             top: 0;
@@ -171,15 +171,14 @@
             display: none;
             align-items: center;
             justify-content: center;
-            background: rgba(5, 7, 10, 0.88);
+            background: rgba(5, 7, 10, 0.90);
             z-index: 9;
         }
         #countdownText {
             font-size: 240px; 
             font-weight: 900;
-            color: #00e5ff; 
-            /* Fixed Position Neon Glow System - No scaling animation to prevent jitter */
-            text-shadow: 0 0 10px #00e5ff, 0 0 20px #00e5ff, 0 0 40px #00b0ff, 0 0 80px #00b0ff;
+            color: #d4af37; /* Clean Premium Gold */
+            text-shadow: 0 4px 15px rgba(0,0,0,0.6); /* Lightweight Flat shadow to prevent lag */
             opacity: 1;
             transform: scale(1);
             will-change: opacity;
@@ -203,7 +202,7 @@
             transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-align: center;
             width: 90%;
-            direction: ltr; /* English alignment */
+            direction: ltr;
         }
         #rewardToast.show {
             opacity: 1;
@@ -368,7 +367,6 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicTimer = 0;
 let musicStep = 0;
 
-// Fast & Furious Automotive / Cinematic Ambient Note Matrix (Aggressive yet Soft Background Line)
 const fastFuriousMelody = [73.42, 73.42, 110.00, 0, 98.00, 98.00, 146.83, 0, 87.31, 87.31, 130.81, 0, 73.42, 0, 164.81, 0];
 
 function playSoundEffect(freq, duration, vol, type = 'sawtooth', delay = 0) {
@@ -380,8 +378,8 @@ function playSoundEffect(freq, duration, vol, type = 'sawtooth', delay = 0) {
         osc.type = type;
         osc.frequency.setValueAtTime(freq, now);
         
-        // Exact volume level calibration matching the burn sound footprint
-        gain.gain.setValueAtTime(vol * 0.10, now); 
+        // Increased Master Volume globally for higher clarity
+        gain.gain.setValueAtTime(vol * 0.35, now); 
         gain.gain.linearRampToValueAtTime(0.0001, now + duration);
         
         osc.connect(gain);
@@ -399,31 +397,39 @@ function processInlineMusic(dt) {
         const freq = fastFuriousMelody[musicStep % fastFuriousMelody.length];
         musicStep++;
         if (freq > 0) {
-            // Uses a stylized sawtooth wave paired down to sound like a distant high-rev racing drone
-            playSoundEffect(freq, 0.22, 0.18, 'sawtooth'); 
+            playSoundEffect(freq, 0.22, 0.22, 'sawtooth'); 
         }
     }
 }
 
-function playClickSound() { playSoundEffect(500, 0.02, 0.08, 'sine'); }
+function playClickSound() { playSoundEffect(500, 0.02, 0.15, 'sine'); }
 
+// Authentic Super Mario Bros Death Sequence Simulation
 function playMarioDeathSound() {
-    // Calibrated exactly matching the new background theme volume
-    const mNotes = [220.00, 196.00, 146.83, 110.00];
-    mNotes.forEach((freq, idx) => {
-        playSoundEffect(freq, 0.16, 0.18, 'triangle', idx * 0.08);
+    const marioDeathSequence = [
+        {f: 493.88, d: 0.10}, // B4
+        {f: 659.25, d: 0.10}, // E5
+        {f: 587.33, d: 0.10}, // D5
+        {f: 523.25, d: 0.10}, // C5
+        {f: 493.88, d: 0.12}, // B4
+        {f: 392.00, d: 0.12}, // G4
+        {f: 329.63, d: 0.15}, // E4
+        {f: 261.63, d: 0.25}  // C4
+    ];
+    marioDeathSequence.forEach((note, idx) => {
+        // Balanced cleanly to match game background music amplitude
+        playSoundEffect(note.f, note.d, 0.28, 'triangle', idx * 0.09);
     });
 }
 
-function playBeep() { playSoundEffect(587.33, 0.08, 0.12, 'sine'); }
+function playBeep() { playSoundEffect(587.33, 0.08, 0.20, 'sine'); }
 
 function playRewardSound() {
     [349.23, 440.00, 523.25, 698.46].forEach((f, i) => {
-        playSoundEffect(f, 0.12, 0.15, 'sine', i * 0.05);
+        playSoundEffect(f, 0.12, 0.22, 'sine', i * 0.05);
     });
 }
 
-// Prizes config containing dynamic variables (Color, Jobs, Name Changes) fully split from speed
 const stageJobs = [
     { key: 'taxi', name: 'TAXI', color: '#facc15', type: 'STANDARD' },
     { key: 'police', name: 'POLICE', color: '#1e293b', type: 'SPEED_OBSTACLE' }, 
@@ -505,7 +511,7 @@ let animationFrameId = null;
 
 let baseRoadSpeed = 560; 
 let playerSpeed = 590;
-let realGameStageLevel = 0; // Pure level counter tracking independent game acceleration
+let realGameStageLevel = 0; 
 
 const player = {
     x: 250, y: 520, 
@@ -523,11 +529,8 @@ function checkStageProgression() {
     passedCarsCount++;
     if (passedCarsCount >= 10) {
         passedCarsCount = 0;
-        
-        // Dynamic Variable Rewards Cycle (Jobs, Colors, Roles shifts automatically)
         currentStageIndex = (currentStageIndex < stageJobs.length - 1) ? currentStageIndex + 1 : 0;
         
-        // Acceleration engine increments fully separated from prizes setup
         realGameStageLevel++;
         baseRoadSpeed = 560 + (realGameStageLevel * 140);
         playerSpeed = 590 + (realGameStageLevel * 75);
@@ -544,12 +547,12 @@ function showRewardNotification(text) {
     setTimeout(() => { rewardToast.classList.remove('show'); }, 3400);
 }
 
+// Optimization: Pre-calculated super light linear tree layouts (No complex math loops)
 function initScenery() {
     sceneryItems = [];
-    // Tree generation density frequency cut down by half (Y delta moved from 120 to 245)
-    for (let y = -100; y < canvas.height + 100; y += 245) {
+    for (let y = -100; y < canvas.height + 100; y += 260) {
         sceneryItems.push({ x: canvas.width * 0.035, y: y });
-        sceneryItems.push({ x: canvas.width * 0.945, y: y + 110 });
+        sceneryItems.push({ x: canvas.width * 0.945, y: y + 130 });
     }
 }
 
@@ -734,10 +737,10 @@ function startCountdown() {
 
     function nextTick() {
         if (current < states.length) {
-            // Completely static, no layout-thrashing class updates
             countdownText.innerText = states[current];
             current++;
-            setTimeout(nextTick, 850);
+            // Deliberately balanced interval (1200ms) for a softer, calmer count pace
+            setTimeout(nextTick, 1200);
         } else {
             countdownOverlay.style.display = 'none';
             playBeep();
