@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Ultra Smooth Pro</title>
+    <title>Turbo Track - Zero Lag Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -35,9 +35,12 @@
             width: 100%;
             height: 100%;
             display: block;
-            /* فعال‌سازی شتاب‌دهنده گرافیکی سخت‌افزار مرورگر برای حذف لگ */
-            transform: translateZ(0);
-            -webkit-transform: translateZ(0);
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            transform: translate3d(0,0,0);
+            -webkit-transform: translate3d(0,0,0);
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
         }
         
         #topBar {
@@ -56,13 +59,9 @@
             color: #ffffff;
             font-size: 11px; 
             font-weight: 800;
-            letter-spacing: 0.3px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-            background: rgba(15, 21, 32, 0.88);
+            background: rgba(15, 21, 32, 0.95);
             border: 1px solid rgba(0, 229, 255, 0.2);
             border-radius: 10px;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
             display: flex;
             align-items: center;
             gap: 14px; 
@@ -77,7 +76,7 @@
             font-size: 11px;
             font-weight: 800;
             color: #ffffff;
-            background: rgba(15, 21, 32, 0.9);
+            background: rgba(15, 21, 32, 0.95);
             border: 1px solid #00e5ff;
             border-radius: 10px;
             cursor: pointer;
@@ -106,9 +105,7 @@
             border-radius: 50%;
             color: white;
             font-size: 32px;
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.15);
             cursor: pointer;
             outline: none;
             display: flex;
@@ -138,7 +135,6 @@
             font-weight: 900;
             letter-spacing: 2px;
             margin-bottom: 40px;
-            text-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
         }
         
         #gameOverScreen { background: rgba(7, 9, 14, 0.96); display: none; }
@@ -147,7 +143,6 @@
             font-size: 42px;
             font-weight: 900;
             margin-bottom: 40px;
-            text-shadow: 0 0 25px rgba(255, 34, 34, 0.5);
         }
         
         .menu-btn {
@@ -179,13 +174,12 @@
             font-size: 280px; 
             font-weight: 900;
             color: #facc15; 
-            text-shadow: 0 0 60px rgba(250, 204, 21, 0.5), 0 4px 20px rgba(0,0,0,0.6);
             opacity: 0;
             transform: scale(1.7);
-            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.75s ease-out;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease-out;
         }
         #countdownText.animate {
-            transform: scale(0.95);
+            transform: scale(1);
             opacity: 1;
         }
 
@@ -200,11 +194,10 @@
             font-size: 14px;
             font-weight: 900;
             border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.5);
             z-index: 8;
             opacity: 0;
             pointer-events: none;
-            transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s ease;
             text-align: center;
             width: 90%;
             direction: rtl;
@@ -220,7 +213,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #06080c 0%, #0b101a 100%);
+            background: #06080c;
             display: none;
             flex-direction: column;
             align-items: center;
@@ -228,30 +221,23 @@
             z-index: 100;
             padding: 30px;
             text-align: center;
-            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.8);
         }
         .error-card {
-            background: rgba(15, 22, 36, 0.65);
+            background: rgba(15, 22, 36, 0.9);
             border: 1px solid rgba(239, 68, 68, 0.2);
             border-radius: 28px;
             padding: 50px 35px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 50px rgba(239, 68, 68, 0.03);
             max-width: 420px;
             width: 100%;
         }
         .error-icon {
             font-size: 60px;
             margin-bottom: 30px;
-            filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.5));
-            animation: pulseCard 2.5s infinite ease-in-out;
         }
         .error-title-en {
             color: #ffffff;
             font-size: 22px;
             font-weight: 800;
-            letter-spacing: 0.5px;
             margin-bottom: 12px;
             text-transform: uppercase;
         }
@@ -260,7 +246,6 @@
             font-size: 13px;
             font-weight: 500;
             line-height: 1.5;
-            letter-spacing: 0.2px;
         }
     </style>
 </head>
@@ -309,9 +294,8 @@
 </div>
 
 <script>
-// --- لیست سفید کاربران مجاز ---
 const ALLOWED_USERS = [
-    123456789,         
+    2049044424,         
     "your_username"    
 ];
 
@@ -356,7 +340,7 @@ function verifyTelegramAccess() {
 verifyTelegramAccess();
 
 const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { alpha: false }); // غیرفعال کردن آلفا برای افزایش شدید سرعت رندر مرورگر
 
 const welcomeScreen = document.getElementById('welcomeScreen');
 const gameOverScreen = document.getElementById('gameOverScreen');
@@ -384,7 +368,7 @@ const player = {
     height: 76,
     movingLeft: false,
     movingRight: false,
-    speed: 530 
+    speed: 540 
 };
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -421,9 +405,7 @@ function playMusicNode() {
 
 function startMusic() { stopMusic(); musicStep = 0; musicInterval = setInterval(playMusicNode, 180); } 
 function stopMusic() { if (musicInterval) { clearInterval(musicInterval); musicInterval = null; } }
-
 function playClickSound() { playSoundEffect(800, 0.02, 0.3, 'sine'); }
-
 function playMarioDeathSound() {
     const mNotes = [440, 392, 349, 293];
     const timings = [0.0, 0.06, 0.12, 0.18]; 
@@ -432,9 +414,7 @@ function playMarioDeathSound() {
         playSoundEffect(freq, durations[idx], 0.45, 'sawtooth', timings[idx]);
     });
 }
-
 function playBeep() { playSoundEffect(550, 0.08, 0.45, 'sine'); }
-
 function playRewardSound() {
     [523, 659, 784].forEach((f, i) => {
         playSoundEffect(f, 0.08, 0.45, 'sine', i * 0.06);
@@ -515,8 +495,7 @@ function updateAndDrawScenery(speed, dt) {
         if (isPlaying && !isPaused && !isBurning) item.y += speed * dt;
         if (item.y > canvas.height + 40) item.y = -40;
 
-        ctx.beginPath(); ctx.moveTo(item.x, item.y + 8); ctx.lineTo(item.x - 8, item.y + 24); ctx.lineTo(item.x + 8, item.y + 24); ctx.closePath(); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(item.x, item.y); ctx.lineTo(item.x - 5, item.y + 12); ctx.lineTo(item.x + 5, item.y + 12); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(item.x, item.y + 8); ctx.lineTo(item.x - 5, item.y + 20); ctx.lineTo(item.x + 5, item.y + 20); ctx.closePath(); ctx.fill();
     }
 }
 
@@ -530,11 +509,7 @@ class ExplodeParticle {
         this.vy = isFire ? (Math.sin(angle) * speed * 0.4) - 40 : Math.sin(angle) * speed; 
         this.alpha = 1;
         this.decay = isFire ? Math.random() * 0.9 + 1.0 : 1.8;
-        if (isFire) {
-            this.color = ['#ef4444', '#f97316', '#facc15', '#475569', '#1e293b'][Math.floor(Math.random() * 5)];
-        } else {
-            this.color = '#00e5ff';
-        }
+        this.color = isFire ? ['#ef4444', '#f97316', '#facc15'][Math.floor(Math.random() * 3)] : '#00e5ff';
     }
     update(dt) { 
         this.x += this.vx * dt; 
@@ -553,120 +528,93 @@ class ExplodeParticle {
     }
 }
 
-// تابع ترسیم فوق‌العاده طبیعی خودروها با چرخ، کاپوت، صندوق و چراغ‌های سه‌بعدی واقعی
-function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = false) {
+// رندر فوق‌العاده روان ماشین‌ها بدون لرزش پیکسل با جزییات کاپوت، صندوق و چرخ اسپرت
+function drawRealtimeVehicle(x, y, width, height, color, name, type) {
     ctx.save();
-    ctx.translate(x, y);
+    ctx.translate(Math.round(x), Math.round(y)); // رند کردن اعشار مختصات برای جلوگیری از ماتی و لگ تصویر
 
-    // ۱. سایه متمرکز و طبیعی زیر ماشین جهت القای حس ارتفاع و واقع‌گرایی
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.beginPath();
-    ctx.roundRect(-width/2 + 2, -height/2 + 6, width, height, 14);
-    ctx.fill();
+    // سایه بهینه زیر ماشین
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(-width/2 + 2, -height/2 + 6, width, height);
 
     const isBike = (type === 'BIKE');
     const coreW = isBike ? width * 0.55 : width * 0.92;
 
-    // ۲. چهار عدد چرخ ضخیم سه‌بعدی مشکی رنگ به همراه رینگ آلومینیومی دایره‌ای زیبا
-    ctx.fillStyle = '#0a0e17'; 
-    const tireW = 6;
-    const tireH = 15;
+    // تایرها و رینگ‌های فلت و باکیفیت ماشین‌ها
+    ctx.fillStyle = '#0a0d14'; 
     if (!isBike) {
-        // جلو چپ و راست
-        ctx.fillRect(-width/2 - 2, -height/2 + 12, tireW, tireH);
-        ctx.fillRect(width/2 - 4, -height/2 + 12, tireW, tireH);
-        // عقب چپ و راست
-        ctx.fillRect(-width/2 - 2, height/2 - 27, tireW, tireH);
-        ctx.fillRect(width/2 - 4, height/2 - 27, tireW, tireH);
+        ctx.fillRect(-width/2 - 2, -height/2 + 10, 6, 14);
+        ctx.fillRect(width/2 - 4, -height/2 + 10, 6, 14);
+        ctx.fillRect(-width/2 - 2, height/2 - 24, 6, 14);
+        ctx.fillRect(width/2 - 4, height/2 - 24, 6, 14);
 
-        // طراحی رینگ دایره‌ای نقره‌ای داخل چرخ‌ها
-        ctx.fillStyle = '#e2e8f0';
-        ctx.fillRect(-width/2 - 1, -height/2 + 17, 2, 5);
-        ctx.fillRect(width/2 - 3, -height/2 + 17, 2, 5);
-        ctx.fillRect(-width/2 - 1, height/2 - 22, 2, 5);
-        ctx.fillRect(width/2 - 3, height/2 - 22, 2, 5);
+        // خط رینگ آلومینیومی داخلی
+        ctx.fillStyle = '#cbd5e1';
+        ctx.fillRect(-width/2 - 1, -height/2 + 14, 2, 6);
+        ctx.fillRect(width/2 - 3, -height/2 + 14, 2, 6);
+        ctx.fillRect(-width/2 - 1, height/2 - 20, 2, 6);
+        ctx.fillRect(width/2 - 3, height/2 - 20, 2, 6);
     } else {
-        ctx.fillStyle = '#0a0e17';
-        ctx.fillRect(-2.5, -height/2 + 6, 5, 16);
-        ctx.fillRect(-2.5, height/2 - 22, 5, 16);
+        ctx.fillRect(-2, -height/2 + 6, 4, 14);
+        ctx.fillRect(-2, height/2 - 20, 4, 14);
     }
 
-    // ۳. بدنه آیرودینامیک با خطوط برجسته لوکس
+    // بدنه اصلی ماشین
     ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.roundRect(-coreW/2, -height/2, coreW, height, isBike ? 6 : 14);
-    ctx.fill();
-    ctx.lineWidth = 1.8;
+    ctx.fillRect(-coreW/2, -height/2, coreW, height);
+    ctx.lineWidth = 2;
     ctx.strokeStyle = '#020617';
-    ctx.stroke();
+    ctx.strokeRect(-coreW/2, -height/2, coreW, height);
 
     if (!isBike) {
-        // ۴. طراحی طبیعی خط شیار کاپوت جلو خودرو
-        ctx.strokeStyle = 'rgba(0,0,0,0.38)';
+        // شیار طبیعی روی کاپوت جلو خودرو
+        ctx.strokeStyle = 'rgba(0,0,0,0.3)';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
         ctx.moveTo(-coreW/2 + 4, -height/2 + 16);
         ctx.lineTo(coreW/2 - 4, -height/2 + 16);
         ctx.stroke();
 
-        // خطوط عضلانی روی کاپوت چپ و راست (طبیعی‌تر شدن ماشین)
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        // خطوط کناری آیرودینامیک کاپوت
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
         ctx.beginPath();
-        ctx.moveTo(-coreW/4, -height/2 + 2);
-        ctx.lineTo(-coreW/4, -height/2 + 14);
-        ctx.moveTo(coreW/4, -height/2 + 2);
-        ctx.lineTo(coreW/4, -height/2 + 14);
+        ctx.moveTo(-coreW/4, -height/2 + 2); ctx.lineTo(-coreW/4, -height/2 + 14);
+        ctx.moveTo(coreW/4, -height/2 + 2); ctx.lineTo(coreW/4, -height/2 + 14);
         ctx.stroke();
 
-        // ۵. طراحی طبیعی خط کشیده صندوق عقب
-        ctx.strokeStyle = 'rgba(0,0,0,0.38)';
+        // شیار متمایز صندوق عقب
+        ctx.strokeStyle = 'rgba(0,0,0,0.3)';
         ctx.beginPath();
-        ctx.moveTo(-coreW/2 + 5, height/2 - 14);
-        ctx.lineTo(coreW/2 - 5, height/2 - 14);
+        ctx.moveTo(-coreW/2 + 4, height/2 - 14);
+        ctx.lineTo(coreW/2 - 4, height/2 - 14);
         ctx.stroke();
     }
 
-    // ۶. شیشه‌های دودی زاویه‌دار طبیعی با رفلکس متقاطع نوری براق
-    ctx.fillStyle = 'rgba(11,18,32,0.95)';
-    ctx.beginPath();
+    // شیشه‌های دودی اسپرت با انعکاص نور
+    ctx.fillStyle = '#0f172a';
     if (!isBike) {
-        ctx.roundRect(-coreW/2 + 4, -height/6, coreW - 8, height * 0.50, 6);
-    } else {
-        ctx.roundRect(-coreW/4, -2, coreW/2, height * 0.25, 2);
-    }
-    ctx.fill();
-
-    // رفلکس زاویه‌دار مورب روی شیشه جلو (حس طبیعی شیشه واقعی)
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    if(!isBike) {
+        ctx.fillRect(-coreW/2 + 4, -height/6, coreW - 8, height * 0.45);
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
         ctx.moveTo(-coreW/3, -height/9);
-        ctx.lineTo(coreW/3, -height/7);
+        ctx.lineTo(coreW/3, -height/8);
         ctx.stroke();
+    } else {
+        ctx.fillRect(-coreW/4, -2, coreW/2, height * 0.22);
     }
 
-    // ۷. چراغ‌های هالوژنی جلو (سفید یخی درخشان)
-    ctx.save();
+    // چراغ‌های جلو (زنون پرنور)
     if (!isBike) {
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = '#ffffff';
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(-coreW/2 + 1, -height/2, 8, 4);
-        ctx.fillRect(coreW/2 - 9, -height/2, 8, 4);
-    }
-    ctx.restore();
+        ctx.fillRect(-coreW/2 + 2, -height/2, 6, 3);
+        ctx.fillRect(coreW/2 - 8, -height/2, 6, 3);
 
-    // ۸. چراغ‌های عقب ال‌ای‌دی کشیده طبیعی (قرمز پررنگ)
-    ctx.save();
-    if (!isBike) {
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = '#ff0044';
-        ctx.fillStyle = '#ff0044';
-        ctx.fillRect(-coreW/2 + 2, height/2 - 4, 8, 4);
-        ctx.fillRect(coreW/2 - 10, height/2 - 4, 8, 4);
+        // چراغ‌های عقب (خطر قرمز ممتد ال‌ای‌دی)
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(-coreW/2 + 2, height/2 - 3, 6, 3);
+        ctx.fillRect(coreW/2 - 8, height/2 - 3, 6, 3);
     }
-    ctx.restore();
 
     // نام خوانای وسیله
     ctx.fillStyle = '#ffffff';
@@ -698,7 +646,7 @@ class EnemyCar {
     }
     update(dt) { this.y += this.speed * dt; }
     draw() {
-        drawRealtimeVehicle(this.x, this.y, this.width, this.height, this.jobSpec.color, this.jobSpec.name, this.jobSpec.type, false);
+        drawRealtimeVehicle(this.x, this.y, this.width, this.height, this.jobSpec.color, this.jobSpec.name, this.jobSpec.type);
     }
 }
 
@@ -736,7 +684,7 @@ function handleEnemies(dt) {
 }
 
 function intersects(x1, y1, w1, h1, x2, y2, w2, h2) {
-    return x1 - w1/2.3 < x2 + w2/2.3 && x1 + w1/2.3 > x2 - w2/2.3 && y1 - h1/2.3 < y2 + h2/2.3 && y1 + h1/2.3 > y2 - h2/2.3;
+    return x1 - w1/2.4 < x2 + w2/2.4 && x1 + w1/2.4 > x2 - w2/2.4 && y1 - h1/2.4 < y2 + h2/2.4 && y1 + h1/2.4 > y2 - h2/2.4;
 }
 
 function triggerCarBurnEffect() {
@@ -777,12 +725,12 @@ function drawRoad(dt) {
         }
     }
 
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
     if (!isPaused && !isBurning) roadLinesY = (roadLinesY + currentRoadSpeed * dt) % 65;
 
     for (let y = roadLinesY - 65; y < canvas.height; y += 65) {
-        ctx.fillRect(canvas.width * 0.38 - 1, y, 2, 30);
-        ctx.fillRect(canvas.width * 0.62 - 1, y, 2, 30);
+        ctx.fillRect(canvas.width * 0.38 - 1, Math.round(y), 2, 30);
+        ctx.fillRect(canvas.width * 0.62 - 1, Math.round(y), 2, 30);
     }
 }
 
@@ -802,7 +750,7 @@ function startCountdown() {
             void countdownText.offsetWidth; 
             countdownText.classList.add('animate');
             current++;
-            setTimeout(nextTick, 850);
+            setTimeout(nextTick, 800);
         } else {
             countdownOverlay.style.display = 'none';
             playBeep();
@@ -844,15 +792,19 @@ function resetGame() {
     startCountdown();
 }
 
-// حلقه لوپ بازی بهینه‌سازی شده با سیستم زمان واقعی پرفورمنس بالا (حذف کامل لرزش و پرش)
+// سیستم محاسبه لوپ فوق پیشرفته مستقل از فریم برای رندر ۱۰۰٪ بدون گیر
 function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
     let dt = (currentTime - lastTime) / 1000;
-    if (dt > 0.1) dt = 0.1; 
+    // قفل کردن بازه زمانی برای جلوگیری از لرزش ناشی از پس‌زمینه شدن مروگر
+    if (dt > 0.05) dt = 0.05; 
     lastTime = currentTime;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // پاک کردن یکپارچه صفحه بدون پرش رنگی
+    ctx.fillStyle = '#05070a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
     drawRoad(dt);
 
     if (isPlaying && !isPaused && !isBurning) {
@@ -861,7 +813,7 @@ function loop(currentTime) {
     }
 
     if (!isBurning) {
-        drawRealtimeVehicle(player.x, player.y, player.width, player.height, '#00e5ff', 'YOU', 'STANDARD', true);
+        drawRealtimeVehicle(player.x, player.y, player.width, player.height, '#00e5ff', 'YOU', 'STANDARD');
     }
 
     for (let i = particles.length - 1; i >= 0; i--) {
@@ -876,7 +828,7 @@ function loop(currentTime) {
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
 
-btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; playClickSound(); } });
+btnLeft.addEventListener('mousedown', () => { if(!isPaused && !isBurning) { player.movingLeft = true; playClickSound(); } });
 btnLeft.addEventListener('mouseup', () => player.movingLeft = false);
 btnLeft.addEventListener('mouseleave', () => player.movingLeft = false);
 btnLeft.addEventListener('touchstart', (e) => { 
@@ -888,7 +840,7 @@ btnLeft.addEventListener('touchend', (e) => {
     player.movingLeft = false;
 }, { passive: false });
 
-btnRight.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingRight = true; playClickSound(); } });
+btnRight.addEventListener('mousedown', () => { if(!isPaused && !isBurning) { player.movingRight = true; playClickSound(); } });
 btnRight.addEventListener('mouseup', () => player.movingRight = false);
 btnRight.addEventListener('mouseleave', () => player.movingRight = false);
 btnRight.addEventListener('touchstart', (e) => { 
