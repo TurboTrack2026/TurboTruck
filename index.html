@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Telegram Authorized</title>
+    <title>Turbo Track - VIP Access</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -11,15 +11,15 @@
         #gameContainer { position: relative; width: 100%; max-width: 500px; height: 100vh; background: #0f1319; overflow: hidden; }
         canvas { width: 100%; height: 100%; display: block; }
         
-        /* استایل‌های بخش قفل تلگرام */
+        /* Unauthorized Screen Styling (English & No Buttons) */
         #unauthorizedScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #07090e; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; padding: 30px; text-align: center; }
         .lock-icon { font-size: 64px; margin-bottom: 20px; color: #ff2222; text-shadow: 0 0 20px rgba(255,34,34,0.5); }
-        .auth-title { font-size: 24px; font-weight: 900; color: #ffffff; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .auth-desc { font-size: 14px; color: #94a3b8; margin-bottom: 30px; line-height: 1.6; direction: rtl; }
-        .id-badge { background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.3); padding: 10px 20px; border-radius: 12px; font-mono: monospace; color: #00e5ff; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
-        .buy-btn { padding: 15px 40px; font-size: 16px; font-weight: bold; color: #000000; background: #00e5ff; border: none; border-radius: 30px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(0,229,255,0.4); text-decoration: none; }
+        .auth-title { font-size: 26px; font-weight: 900; color: #ff2222; margin-bottom: 20px; letter-spacing: 1px; }
+        .auth-desc { font-size: 16px; color: #e2e8f0; margin-bottom: 25px; line-height: 1.6; font-weight: 600; max-width: 85%; }
+        .id-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .id-badge { background: rgba(255, 34, 34, 0.1); border: 1px solid rgba(255, 34, 34, 0.2); padding: 12px 24px; border-radius: 12px; font-family: monospace; color: #ff4444; font-weight: bold; font-size: 18px; letter-spacing: 0.5px; }
 
-        /* بقیه استایل‌ها (بدون تغییر) */
+        /* Game UI */
         #topBar { position: absolute; top: 15px; left: 0; width: 100%; padding: 0 15px; display: flex; justify-content: space-between; align-items: center; z-index: 6; pointer-events: none; }
         #scoreBoard { color: #ffffff; font-size: 11px; font-weight: 800; letter-spacing: 0.3px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); background: rgba(15, 21, 32, 0.88); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 10px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; gap: 14px; padding: 8px 14px; flex-grow: 1; }
         .pause-btn { padding: 7px 15px; font-size: 11px; font-weight: 800; color: #ffffff; background: rgba(15, 21, 32, 0.9); border: 1px solid #00e5ff; border-radius: 10px; cursor: pointer; pointer-events: auto; display: none; margin-left: 10px; white-space: nowrap; }
@@ -44,84 +44,12 @@
 <div id="gameContainer">
     <div id="unauthorizedScreen">
         <div class="lock-icon">🔒</div>
-        <div class="auth-title">Access Denied</div>
+        <div class="auth-title">ACCESS DENIED</div>
         <div class="auth-desc">
-            متأسفانه شما اجازه ورود به این مسابقه را ندارید.<br>
-            این بازی فقط برای اعضای ویژه فعال است.<br><br>
-            آیدی تلگرام شما برای فعال‌سازی:
+            You do not have permission to enter the VIP game. Please purchase a VIP subscription.
         </div>
+        <div class="id-label">Your Telegram ID:</div>
         <div class="id-badge" id="displayUserId">Checking...</div>
-        <div class="auth-desc">لطفاً برای خرید اشتراک به پشتیبانی پیام دهید.</div>
-        <a href="https://t.me/your_support_bot" class="buy-btn">ارتباط با پشتیبانی</a>
-    </div>
-
-    <canvas id="gameCanvas"></canvas>
-    
-    <div id="topBar">
-        <div id="scoreBoard">
-            <span class="sb-item" id="sbPass">PASS: 0/10</span>
-            <span class="sb-item" id="sbScore">SCORE: 0</span>
-            <span class="sb-item" id="sbStage">STAGE: 1</span>
-        </div>
-        <button id="pauseBtn" class="pause-btn">Pause</button>
-    </div>
-
-    <div id="rewardToast">تبریک! شما جایزه ی خفن این مرحله رو بردید!```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Telegram Authorized</title>
-    <script src="[https://telegram.org/js/telegram-web-app.js](https://telegram.org/js/telegram-web-app.js)"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #05070a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; color: white; }
-        #gameContainer { position: relative; width: 100%; max-width: 500px; height: 100vh; background: #0f1319; overflow: hidden; }
-        canvas { width: 100%; height: 100%; display: block; }
-        
-        /* استایل‌های بخش قفل تلگرام */
-        #unauthorizedScreen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #07090e; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 20; padding: 30px; text-align: center; }
-        .lock-icon { font-size: 64px; margin-bottom: 20px; color: #ff2222; text-shadow: 0 0 20px rgba(255,34,34,0.5); }
-        .auth-title { font-size: 24px; font-weight: 900; color: #ffffff; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
-        .auth-desc { font-size: 14px; color: #94a3b8; margin-bottom: 30px; line-height: 1.6; direction: rtl; }
-        .id-badge { background: rgba(0, 229, 255, 0.1); border: 1px solid rgba(0, 229, 255, 0.3); padding: 10px 20px; border-radius: 12px; font-family: monospace; color: #00e5ff; font-weight: bold; font-size: 16px; margin-bottom: 10px; }
-        .buy-btn { padding: 15px 40px; font-size: 16px; font-weight: bold; color: #000000; background: #00e5ff; border: none; border-radius: 30px; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 20px rgba(0,229,255,0.4); text-decoration: none; }
-
-        /* بقیه استایل‌ها (بدون تغییر از نسخه روان قبلی) */
-        #topBar { position: absolute; top: 15px; left: 0; width: 100%; padding: 0 15px; display: flex; justify-content: space-between; align-items: center; z-index: 6; pointer-events: none; }
-        #scoreBoard { color: #ffffff; font-size: 11px; font-weight: 800; letter-spacing: 0.3px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); background: rgba(15, 21, 32, 0.88); border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 10px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: flex; align-items: center; gap: 14px; padding: 8px 14px; flex-grow: 1; }
-        .pause-btn { padding: 7px 15px; font-size: 11px; font-weight: 800; color: #ffffff; background: rgba(15, 21, 32, 0.9); border: 1px solid #00e5ff; border-radius: 10px; cursor: pointer; pointer-events: auto; display: none; margin-left: 10px; white-space: nowrap; }
-        #controls { display: flex; justify-content: center; gap: 80px; align-items: center; width: 100%; position: absolute; bottom: 110px; padding: 0 25px; pointer-events: none; z-index: 5; }
-        .btn { width: 84px; height: 84px; border: 2px solid rgba(255, 255, 255, 0.25); border-radius: 50%; color: white; font-size: 32px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); cursor: pointer; outline: none; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; }
-        .screen-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
-        #welcomeScreen { background: #07090e; }
-        .welcome-title { color: #00e5ff; font-size: 36px; font-weight: 900; letter-spacing: 2px; margin-bottom: 40px; text-shadow: 0 0 25px rgba(0, 229, 255, 0.5); }
-        #gameOverScreen { background: rgba(7, 9, 14, 0.96); display: none; }
-        .game-over-title { color: #ff2222; font-size: 42px; font-weight: 900; margin-bottom: 40px; text-shadow: 0 0 25px rgba(255, 34, 34, 0.5); }
-        .menu-btn { padding: 15px 50px; font-size: 15px; font-weight: bold; color: #ffffff; background: #11151d; border: 2px solid #00e5ff; border-radius: 30px; cursor: pointer; text-transform: uppercase; }
-        #restartBtn { border-color: #ff2222; }
-        #countdownOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; align-items: center; justify-content: center; background: rgba(5, 7, 10, 0.85); z-index: 9; }
-        #countdownText { font-size: 280px; font-weight: 900; color: #facc15; text-shadow: 0 0 60px rgba(250, 204, 21, 0.5), 0 4px 20px rgba(0,0,0,0.6); opacity: 0; transform: scale(1.7); transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.75s ease-out; }
-        #countdownText.animate { transform: scale(0.95); opacity: 1; }
-        #rewardToast { position: absolute; top: 95px; left: 50%; transform: translateX(-50%) scale(0.85); background: #22c55e; color: #ffffff; padding: 14px 24px; font-size: 14px; font-weight: 900; border-radius: 16px; box-shadow: 0 8px 30px rgba(34, 197, 94, 0.5); z-index: 8; opacity: 0; pointer-events: none; transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; width: 90%; direction: rtl; }
-        #rewardToast.show { opacity: 1; transform: translateX(-50%) scale(1); }
-    </style>
-</head>
-<body>
-
-<div id="gameContainer">
-    <div id="unauthorizedScreen">
-        <div class="lock-icon">🔒</div>
-        <div class="auth-title">Access Denied</div>
-        <div class="auth-desc">
-            متأسفانه شما اجازه ورود به این مسابقه را ندارید.<br>
-            این بازی فقط برای اعضای ویژه فعال است.<br><br>
-            آیدی تلگرام شما برای فعال‌سازی:
-        </div>
-        <div class="id-badge" id="displayUserId">Checking...</div>
-        <div class="auth-desc">لطفاً برای خرید اشتراک به پشتیبانی پیام دهید.</div>
-        <a href="[https://t.me/your_support_bot](https://t.me/your_support_bot)" class="buy-btn">ارتباط با پشتیبانی</a>
     </div>
 
     <canvas id="gameCanvas"></canvas>
@@ -158,12 +86,10 @@
 </div>
 
 <script>
-// --- بخش تنظیمات آیدی تلگرام ---
-// آیدی‌های عددی مجاز را اینجا وارد کنید (به صورت عدد)
+// --- خط 114: بخش تنظیمات آیدی تلگرام ---
 const ALLOWED_USERS = [
-    2049044424, // آیدی خودت
-    987654321, // مشتری اول
-    // آیدی‌های جدید را اینجا اضافه کن
+    2049044424, // <-- آیدی عددی خودت رو دقیقاً اینجا جایگزین کن
+    // آیدی‌های مجاز بعدی رو با ویرگول زیرش اضافه کن
 ];
 
 const tg = window.Telegram.WebApp;
@@ -172,38 +98,29 @@ const displayUserId = document.getElementById('displayUserId');
 
 function checkAuthorization() {
     tg.ready();
-    tg.expand(); // باز کردن کامل صفحه
+    tg.expand();
 
-    // گرفتن اطلاعات کاربر از تلگرام
     const user = tg.initDataUnsafe?.user;
 
     if (user && user.id) {
         const userId = user.id;
-        displayUserId.innerText = userId; // نمایش آیدی در صفحه قفل
+        displayUserId.innerText = userId;
 
-        // تایید هویت: آیا آیدی کاربر در لیست مجاز هست؟
         if (ALLOWED_USERS.includes(userId)) {
-            // کاربر مجاز است؛ صفحه قفل را مخفی کن و بازی را لود کن
             unauthorizedScreen.style.display = 'none';
             initGameEngine();
         } else {
-            // کاربر مجاز نیست
             unauthorizedScreen.style.display = 'flex';
-            displayUserId.style.color = '#ff2222'; // قرمز کردن آیدی غیرمجاز
         }
     } else {
-        // بازی خارج از تلگرام باز شده است؛ دسترسی قطع
         unauthorizedScreen.style.display = 'flex';
-        displayUserId.innerText = "Error: Use Telegram";
+        displayUserId.innerText = "OPEN IN TELEGRAM";
     }
 }
 
-// اجرای تست تایید هویت به محض لود شدن صفحه
 window.addEventListener('load', checkAuthorization);
 
-
-// --- هسته اصلی بازی (بدون تغییر از نسخه روان قبلی) ---
-// تمام کدهای بازی را داخل این تابع می‌گذاریم تا فقط پس از تایید هویت اجرا شوند
+// هسته بازی
 function initGameEngine() {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -227,7 +144,6 @@ function initGameEngine() {
     }
     resizeCanvas();
 
-    // --- سیستم صوتی هماهنگ‌شده با ولوم ثابت 0.45 ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let musicInterval = null;
     let musicStep = 0;
@@ -268,7 +184,6 @@ function initGameEngine() {
     function playBeep() { playSoundEffect(550, 0.08, 0.45, 'sine'); }
     function playRewardSound() { [523, 659, 784].forEach((f, i) => playSoundEffect(f, 0.08, 0.45, 'sine', i * 0.06)); }
 
-    // لیست موانع فیکس مرحله به مرحله با رنگ کاملاً اختصاصی و ثابت
     const stageJobs = [
         { key: 'ambulance', name: 'AMBU', type: 'STANDARD', color: '#d32f2f' },
         { key: 'taxi', name: 'TAXI', type: 'STANDARD', color: '#fbc02d' },
@@ -347,6 +262,10 @@ function initGameEngine() {
     const player = { x: 250, y: 500, width: 58, height: 84, speed: 520, movingLeft: false, movingRight: false };
 
     function updateScoreUI() { sbPass.innerText = `PASS: ${passedCarsCount}/10`; sbScore.innerText = `SCORE: ${score}`; sbStage.innerText = `STAGE: ${currentStageIndex + 1}`; }
+
+    if (ALLOWED_USERS.includes(tg.initDataUnsafe?.user?.id)) {
+        // Double check safety
+    }
 
     function checkStageProgression() {
         passedCarsCount++;
