@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Premium Neon</title>
+    <title>Turbo Track - Classic Neon</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -189,7 +189,6 @@
             background: rgba(3, 5, 8, 0.9);
             z-index: 9;
         }
-        /* طراحی نئونی فوق‌العاده جذاب اعداد شمارش معکوس */
         #countdownText {
             font-size: 240px; 
             font-weight: 900;
@@ -389,7 +388,6 @@ resizeCanvas();
 
 const player = {
     x: canvas.width / 2,
-    targetX: canvas.width / 2, // اضافه شدن متغیر تارگت برای حرکت کاملا روان و بدون گیر
     y: 520,
     width: 52,
     height: 84,
@@ -463,7 +461,7 @@ const stageJobs = [
 
 const carCache = {};
 
-// تابع نقاشی ۱۰۰٪ منطبق با تصویر دوم: سایه‌روشن بدنه، آج تایرها، چراغ‌های باریک عقب و سه بعدی جلو
+// بازگشت کامل به دکوراسیون و استایل پرمیوم خودروی تصویر دوم
 function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     const offCanvas = document.createElement('canvas');
     offCanvas.width = width + 30;
@@ -476,15 +474,9 @@ function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     const bodyW = isBike ? width * 0.55 : width * 0.92;
     const bodyH = height;
 
-    // ۱. سایه سه‌بعدی زیر ماشین
     octx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     octx.shadowBlur = 10;
     octx.shadowOffsetY = 6;
-
-    // ۲. طراحی فوق حرفه‌ای تایرها با آج‌های افقی (دقیقاً مطابق تصویر دوم)
-    octx.fillStyle = '#2d3748'; 
-    octx.strokeStyle = '#1a202c';
-    octx.lineWidth = 1.5;
 
     if (!isBike) {
         const tW = 10;
@@ -498,7 +490,6 @@ function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
             octx.fillStyle = '#1e293b';
             octx.fillRect(tx, ty, tW, tH);
             octx.strokeRect(tx, ty, tW, tH);
-            // رسم آج‌های تایر موجود در عکس
             octx.strokeStyle = '#475569';
             octx.lineWidth = 1;
             for (let lineY = ty + 3; lineY < ty + tH; lineY += 4) {
@@ -507,20 +498,20 @@ function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
             octx.restore();
         };
 
-        drawTireWithTreads(-offX - 3, -offY);       // جلو چپ
-        drawTireWithTreads(offX - 7, -offY);        // جلو راست
-        drawTireWithTreads(-offX - 3, offY - 4);    // عقب چپ
-        drawTireWithTreads(offX - 7, offY - 4);     // عقب راست
+        drawTireWithTreads(-offX - 3, -offY);       
+        drawTireWithTreads(offX - 7, -offY);        
+        drawTireWithTreads(-offX - 3, offY - 4);    
+        drawTireWithTreads(offX - 7, offY - 4);     
     } else {
+        octx.fillStyle = '#1e293b';
         octx.fillRect(-3, -bodyH/2 + 4, 6, 18);
         octx.fillRect(-3, bodyH/2 - 22, 6, 18);
     }
 
-    // ۳. بدنه یکپارچه لوکس با منحنی‌های دقیق و گرادیان سایه‌روشن (مشابه تصویر دوم)
     let bodyGrad = octx.createLinearGradient(-bodyW/2, 0, bodyW/2, 0);
     bodyGrad.addColorStop(0, color);
     bodyGrad.addColorStop(0.3, color);
-    bodyGrad.addColorStop(0.5, '#ffffff'); // هایلایت مرکزی براق بدنه
+    bodyGrad.addColorStop(0.5, '#ffffff'); 
     bodyGrad.addColorStop(0.7, color);
     bodyGrad.addColorStop(1, '#0f172a');
 
@@ -533,12 +524,10 @@ function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     octx.closePath();
     octx.fill();
 
-    // خط دور مشکی ظریف بدنه
     octx.strokeStyle = '#0f172a';
     octx.lineWidth = 2;
     octx.stroke();
 
-    // ۴. خطوط آیرودینامیک ظریف کاپوت (دقیقاً مثل الگو)
     octx.save();
     octx.shadowBlur = 0; octx.shadowOffsetY = 0;
     octx.strokeStyle = 'rgba(255,255,255,0.25)';
@@ -548,7 +537,6 @@ function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     octx.moveTo(bodyW/3, -bodyH/2 + 4); octx.lineTo(bodyW/6, -bodyH/4);
     octx.stroke();
 
-    // ۵. شیشه بزرگ دودی با انحنای ارگونومیک عمیق
     const winW = bodyW * 0.78;
     const winH = bodyH * 0.50;
     const winY = -bodyH * 0.08;
@@ -568,28 +556,20 @@ function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     octx.lineWidth = 2;
     octx.stroke();
 
-    // ۶. چراغ‌های جلو کپسولی شیشه‌ای با انعکاس براق خیره‌کننده
     if (!isBike) {
         octx.fillStyle = 'rgba(255, 255, 255, 0.8)';
         octx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
         octx.lineWidth = 1;
-        
-        // چراغ جلو چپ
         octx.beginPath(); octx.ellipse(-bodyW/2 + 6, -bodyH/2 + 8, 5, 8, -Math.PI/6, 0, Math.PI*2); octx.fill(); octx.stroke();
-        // چراغ جلو راست
         octx.beginPath(); octx.ellipse(bodyW/2 - 6, -bodyH/2 + 8, 5, 8, Math.PI/6, 0, Math.PI*2); octx.fill(); octx.stroke();
 
-        // ۷. دو نوار نئونی منحنی قرمز و باریک عقب (دقیقاً مثل تصویر دوم)
         octx.strokeStyle = '#ff003c';
         octx.lineWidth = 3.5;
         octx.lineCap = 'round';
-        // خط عقب چپ
         octx.beginPath(); octx.moveTo(-bodyW/2 + 5, bodyH/2 - 4); octx.quadraticCurveTo(-bodyW/3, bodyH/2 - 2, -bodyW/4, bodyH/2 - 4); octx.stroke();
-        // خط عقب راست
         octx.beginPath(); octx.moveTo(bodyW/2 - 5, bodyH/2 - 4); octx.quadraticCurveTo(bodyW/3, bodyH/2 - 2, bodyW/4, bodyH/2 - 4); octx.stroke();
     }
 
-    // متن نام خودرو وسط شیشه
     octx.fillStyle = '#ffffff';
     octx.font = '900 12px sans-serif';
     octx.textAlign = 'center';
@@ -624,8 +604,9 @@ let particles = [];
 let sceneryItems = [];
 let lastSpawnLane = -1; 
 
-let currentRoadSpeed = 540; 
-let speedMultiplierPerStage = 160; 
+// تنظیم سرعت پایه بازی جهت افزایش تدریجی آن در مراحل بالاتر
+let currentRoadSpeed = 500; 
+let speedMultiplierPerStage = 80; 
 
 function updateScoreUI() {
     sbPass.innerText = `PASS: ${passedCarsCount}/10`;
@@ -638,7 +619,8 @@ function checkStageProgression() {
     if (passedCarsCount >= 10) {
         passedCarsCount = 0;
         currentStageIndex = (currentStageIndex < stageJobs.length - 1) ? currentStageIndex + 1 : 0;
-        currentRoadSpeed = 540 + (currentStageIndex * speedMultiplierPerStage);
+        // فرمول افزایش پله‌پله و تدریجی سرعت بعد از عبور از هر مرحله
+        currentRoadSpeed = 500 + (currentStageIndex * speedMultiplierPerStage);
         showRewardNotification("تبریک! شما جایزه ی خفن این مرحله رو بردید!");
     }
     updateScoreUI();
@@ -651,11 +633,12 @@ function showRewardNotification(text) {
     setTimeout(() => { rewardToast.classList.remove('show'); }, 2500);
 }
 
+// بازگشت به سیستم درخت‌های کلاسیک و فانتزی کناره جاده
 function initScenery() {
     sceneryItems = [];
     for (let y = -100; y < canvas.height + 100; y += 120) {
-        sceneryItems.push({ x: canvas.width * 0.035, y: y });
-        sceneryItems.push({ x: canvas.width * 0.945, y: y + 60 });
+        sceneryItems.push({ x: canvas.width * 0.04, y: y });
+        sceneryItems.push({ x: canvas.width * 0.96, y: y + 60 });
     }
 }
 
@@ -671,7 +654,13 @@ function updateAndDrawScenery(speed, dt) {
         if (isPlaying && !isPaused && !isBurning) item.y += speed * dt;
         if (item.y > canvas.height + 40) item.y = -40;
 
-        ctx.beginPath(); ctx.moveTo(item.x, item.y + 8); ctx.lineTo(item.x - 5, item.y + 20); ctx.lineTo(item.x + 5, item.y + 20); ctx.closePath(); ctx.fill();
+        // ترسیم مستقیم درخت‌های فانتزی شیک و پایدار
+        ctx.beginPath(); 
+        ctx.moveTo(item.x, item.y + 8); 
+        ctx.lineTo(item.x - 7, item.y + 22); 
+        ctx.lineTo(item.x + 7, item.y + 22); 
+        ctx.closePath(); 
+        ctx.fill();
     }
 }
 
@@ -739,8 +728,8 @@ class EnemyCar {
 function handleEnemies(dt) {
     if (!isPaused && !isBurning) enemySpawnTimer += dt;
     
-    let baseInterval = 0.85 - (currentStageIndex * 0.09);
-    const spawnInterval = Math.max(0.24, baseInterval); 
+    let baseInterval = 0.85 - (currentStageIndex * 0.08);
+    const spawnInterval = Math.max(0.26, baseInterval); 
     
     if (enemySpawnTimer > spawnInterval && !isPaused && !isBurning) {
         enemies.push(new EnemyCar());
@@ -791,6 +780,7 @@ function triggerCarBurnEffect() {
     }, 50);
 }
 
+// بازگشت به سیستم اصلی و روان ترسیم جاده با راندمان بالا
 function drawRoad(dt) {
     ctx.fillStyle = '#111622';
     ctx.fillRect(canvas.width * 0.08, 0, canvas.width * 0.84, canvas.height);
@@ -867,13 +857,12 @@ function resetGame() {
     if (audioCtx.state === 'suspended') { audioCtx.resume(); }
     stopMusic(); 
     score = 0; currentStageIndex = 0; passedCarsCount = 0; lastSpawnLane = -1;
-    currentRoadSpeed = 540;
+    currentRoadSpeed = 500; // ریست سرعت پایه اول بازی
     isBurning = false;
     updateScoreUI();
     
     resizeCanvas();
     player.x = canvas.width / 2; 
-    player.targetX = canvas.width / 2;
     player.y = 520; 
     enemies = []; particles = []; enemySpawnTimer = -0.1;
     initScenery();
@@ -893,18 +882,9 @@ function loop(currentTime) {
     drawRoad(dt);
 
     if (isPlaying && !isPaused && !isBurning) {
-        // اعمال محاسبات درون‌یابی خطی (Lerp) برای حذف کامل کوچکترین گیر در حرکت ماشین
-        if (player.movingLeft) player.targetX -= player.speed * dt;
-        if (player.movingRight) player.targetX += player.speed * dt;
-        
-        // محدود کردن مرزهای حرکت خودرو درون جاده
-        const leftLimit = canvas.width * 0.08 + player.width/2;
-        const rightLimit = canvas.width * 0.92 - player.width/2;
-        if (player.targetX < leftLimit) player.targetX = leftLimit;
-        if (player.targetX > rightLimit) player.targetX = rightLimit;
-
-        // فرمول اصلی جابه‌جایی پیوسته بدون تیک
-        player.x += (player.targetX - player.x) * 0.35;
+        // بازگشت به سیستم پاسخ‌دهی مستقیم و فوق‌العاده سریع دکمه‌ها بدون تاخیر
+        if (player.movingLeft) player.x -= player.speed * dt;
+        if (player.movingRight) player.x += player.speed * dt;
     }
 
     if (!isBurning) {
@@ -923,7 +903,7 @@ function loop(currentTime) {
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
 
-// مدیریت فوق‌العاده دقیق تاچ بدون تداخل جهت رفع کامل کوچکترین تیک حرکتی
+// بازگشت کامل به کدهای تاچ پایداری که هیچ لگی روی موبایل ایجاد نمی‌کردند
 btnLeft.addEventListener('touchstart', (e) => { 
     e.preventDefault(); 
     if(!isPaused && !isBurning) { player.movingLeft = true; playClickSound(); } 
@@ -942,7 +922,7 @@ btnRight.addEventListener('touchend', (e) => {
     player.movingRight = false;
 }, { passive: false });
 
-// هندلرهای بک‌آپ ماوس مخصوص سیستم دسکتاپ
+// کنترلر دسکتاپ (ماوس)
 btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; } });
 btnLeft.addEventListener('mouseup', () => player.movingLeft = false);
 btnLeft.addEventListener('mouseleave', () => player.movingLeft = false);
@@ -957,7 +937,6 @@ window.addEventListener('load', () => {
     resizeCanvas();
     generateAllCarCaches(); 
     player.x = canvas.width / 2;
-    player.targetX = canvas.width / 2;
     player.y = 520;
     initScenery();
 });
