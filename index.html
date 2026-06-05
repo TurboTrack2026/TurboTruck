@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Classic Neon</title>
+    <title>Turbo Track</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -208,10 +208,10 @@
             top: 100px;
             left: 50%;
             transform: translateX(-50%) scale(0.85);
-            background: #10b981;
-            border: 2px solid #34d399;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
-            color: #ffffff;
+            background: #facc15;
+            border: 2px solid #fde047;
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.5);
+            color: #000000;
             padding: 14px 28px;
             font-size: 14px;
             font-weight: 900;
@@ -229,6 +229,7 @@
             transform: translateX(-50%) scale(1);
         }
 
+        /* صفحه قفل ارور دسترسی تلگرام */
         #authErrorScreen {
             position: absolute;
             top: 0;
@@ -280,7 +281,7 @@
         <div class="error-card">
             <div class="error-icon">🔒</div>
             <div class="error-title-en">Access Denied</div>
-            <div class="error-desc-en">You do not have permission to enter the game</div>
+            <div class="error-desc-en">You do not have permission to enter the game.</div>
         </div>
     </div>
 
@@ -295,7 +296,7 @@
         <button id="pauseBtn" class="pause-btn">Pause</button>
     </div>
 
-    <div id="rewardToast">تبریک! شما جایزه ی خفن این مرحله رو بردید!</div>
+    <div id="rewardToast">تبریک! شما جایزه ی خفن این مرحله رو بردید! 🔥</div>
     
     <div id="controls">
         <button id="btnLeft" class="btn">◀</button>
@@ -318,7 +319,7 @@
 </div>
 
 <script>
-// --- لیست سفید کاربران مجاز تلگرام ---
+// --- لیست سفید کاربران مجاز تلگرام (آی‌دی عددی یا یوزرنیم بدون @) ---
 const ALLOWED_USERS = [
     2049044424,         
     "your_username"    
@@ -333,6 +334,7 @@ function verifyTelegramAccess() {
     const welcomeScreen = document.getElementById('welcomeScreen');
     const user = tg.initDataUnsafe?.user;
 
+    // اگر خارج از محیط تلگرام لود شد، جهت تست قفل باز بماند
     if (!tg.initData || !user) {
         authErrorScreen.style.display = 'none';
         welcomeScreen.style.display = 'flex';
@@ -396,6 +398,7 @@ const player = {
     speed: 580 
 };
 
+// --- سیستم صوتی بهینه‌شده با ولوم روان ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicInterval = null;
 let musicStep = 0;
@@ -412,8 +415,11 @@ function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
     const gain = audioCtx.createGain();
     osc.type = type;
     osc.frequency.setValueAtTime(freq, now);
-    gain.gain.setValueAtTime(vol, now);
+    
+    // ولوم خروجی نهایی کاملاً نرمالیزه شده
+    gain.gain.setValueAtTime(vol * 0.4, now);
     gain.gain.linearRampToValueAtTime(0.001, now + duration);
+    
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start(now);
@@ -425,24 +431,26 @@ function playMusicNode() {
     const freq = luxuryMelody[musicStep % luxuryMelody.length];
     musicStep++;
     if (freq === 0) return;
-    playSoundEffect(freq, 0.18, 0.45, 'triangle'); 
+    playSoundEffect(freq, 0.18, 0.35, 'triangle'); 
 }
 
 function startMusic() { stopMusic(); musicStep = 0; musicInterval = setInterval(playMusicNode, 180); } 
 function stopMusic() { if (musicInterval) { clearInterval(musicInterval); musicInterval = null; } }
-function playClickSound() { playSoundEffect(800, 0.02, 0.3, 'sine'); }
-function playMarioDeathSound() {
+function playClickSound() { playSoundEffect(800, 0.02, 0.2, 'sine'); }
+
+// صدا و افکت باخت اصلاح شده و ملایم
+function playLossSound() {
     const mNotes = [440, 392, 349, 293];
     const timings = [0.0, 0.06, 0.12, 0.18]; 
     const durations = [0.05, 0.05, 0.05, 0.15]; 
     mNotes.forEach((freq, idx) => {
-        playSoundEffect(freq, durations[idx], 0.45, 'sawtooth', timings[idx]);
+        playSoundEffect(freq, durations[idx], 0.35, 'sawtooth', timings[idx]);
     });
 }
-function playBeep() { playSoundEffect(550, 0.08, 0.45, 'sine'); }
+function playBeep() { playSoundEffect(550, 0.08, 0.3, 'sine'); }
 function playRewardSound() {
     [523, 659, 784].forEach((f, i) => {
-        playSoundEffect(f, 0.08, 0.45, 'sine', i * 0.06);
+        playSoundEffect(f, 0.08, 0.3, 'sine', i * 0.06);
     });
 }
 
@@ -461,7 +469,7 @@ const stageJobs = [
 
 const carCache = {};
 
-// بازگشت کامل به دکوراسیون و استایل پرمیوم خودروی تصویر دوم
+// رندرینگ دقیق و بدون نقص ماشین‌های تخت از روی عکس
 function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     const offCanvas = document.createElement('canvas');
     offCanvas.width = width + 30;
@@ -474,9 +482,9 @@ function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     const bodyW = isBike ? width * 0.55 : width * 0.92;
     const bodyH = height;
 
-    octx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-    octx.shadowBlur = 10;
-    octx.shadowOffsetY = 6;
+    octx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+    octx.shadowBlur = 8;
+    octx.shadowOffsetY = 5;
 
     if (!isBike) {
         const tW = 10;
@@ -582,7 +590,6 @@ function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
 
 function generateAllCarCaches() {
     preRenderVehicleToCache('#00e5ff', 'YOU', 'STANDARD', player.width, player.height, 'player_car');
-    
     stageJobs.forEach(job => {
         const w = (job.type === 'BIG_SIZE') ? 54 : (job.type === 'BIKE' ? 28 : 48);
         const h = (job.type === 'BIG_SIZE') ? 92 : 76;
@@ -603,10 +610,7 @@ let enemies = [];
 let particles = [];
 let sceneryItems = [];
 let lastSpawnLane = -1; 
-
-// تنظیم سرعت پایه بازی جهت افزایش تدریجی آن در مراحل بالاتر
 let currentRoadSpeed = 500; 
-let speedMultiplierPerStage = 80; 
 
 function updateScoreUI() {
     sbPass.innerText = `PASS: ${passedCarsCount}/10`;
@@ -619,21 +623,18 @@ function checkStageProgression() {
     if (passedCarsCount >= 10) {
         passedCarsCount = 0;
         currentStageIndex = (currentStageIndex < stageJobs.length - 1) ? currentStageIndex + 1 : 0;
-        // فرمول افزایش پله‌پله و تدریجی سرعت بعد از عبور از هر مرحله
-        currentRoadSpeed = 500 + (currentStageIndex * speedMultiplierPerStage);
-        showRewardNotification("تبریک! شما جایزه ی خفن این مرحله رو بردید!");
+        currentRoadSpeed = 500 + (currentStageIndex * 70);
+        showRewardNotification();
     }
     updateScoreUI();
 }
 
-function showRewardNotification(text) {
-    rewardToast.innerText = text;
+function showRewardNotification() {
     rewardToast.classList.add('show');
     playRewardSound();
-    setTimeout(() => { rewardToast.classList.remove('show'); }, 2500);
+    setTimeout(() => { rewardToast.classList.remove('show'); }, 2200);
 }
 
-// بازگشت به سیستم درخت‌های کلاسیک و فانتزی کناره جاده
 function initScenery() {
     sceneryItems = [];
     for (let y = -100; y < canvas.height + 100; y += 120) {
@@ -654,7 +655,6 @@ function updateAndDrawScenery(speed, dt) {
         if (isPlaying && !isPaused && !isBurning) item.y += speed * dt;
         if (item.y > canvas.height + 40) item.y = -40;
 
-        // ترسیم مستقیم درخت‌های فانتزی شیک و پایدار
         ctx.beginPath(); 
         ctx.moveTo(item.x, item.y + 8); 
         ctx.lineTo(item.x - 7, item.y + 22); 
@@ -727,7 +727,6 @@ class EnemyCar {
 
 function handleEnemies(dt) {
     if (!isPaused && !isBurning) enemySpawnTimer += dt;
-    
     let baseInterval = 0.85 - (currentStageIndex * 0.08);
     const spawnInterval = Math.max(0.26, baseInterval); 
     
@@ -765,7 +764,7 @@ function intersects(x1, y1, w1, h1, x2, y2, w2, h2) {
 function triggerCarBurnEffect() {
     isBurning = true;
     stopMusic(); 
-    playMarioDeathSound();
+    playLossSound();
     
     let burnCounter = 0;
     const burnInterval = setInterval(() => {
@@ -780,7 +779,6 @@ function triggerCarBurnEffect() {
     }, 50);
 }
 
-// بازگشت به سیستم اصلی و روان ترسیم جاده با راندمان بالا
 function drawRoad(dt) {
     ctx.fillStyle = '#111622';
     ctx.fillRect(canvas.width * 0.08, 0, canvas.width * 0.84, canvas.height);
@@ -857,7 +855,7 @@ function resetGame() {
     if (audioCtx.state === 'suspended') { audioCtx.resume(); }
     stopMusic(); 
     score = 0; currentStageIndex = 0; passedCarsCount = 0; lastSpawnLane = -1;
-    currentRoadSpeed = 500; // ریست سرعت پایه اول بازی
+    currentRoadSpeed = 500; 
     isBurning = false;
     updateScoreUI();
     
@@ -882,7 +880,7 @@ function loop(currentTime) {
     drawRoad(dt);
 
     if (isPlaying && !isPaused && !isBurning) {
-        // بازگشت به سیستم پاسخ‌دهی مستقیم و فوق‌العاده سریع دکمه‌ها بدون تاخیر
+        // تاچ ریسپانسیو فوق‌العاده سریع بدون کوچک‌ترین تاخیر حرکتی
         if (player.movingLeft) player.x -= player.speed * dt;
         if (player.movingRight) player.x += player.speed * dt;
     }
@@ -903,7 +901,7 @@ function loop(currentTime) {
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
 
-// بازگشت کامل به کدهای تاچ پایداری که هیچ لگی روی موبایل ایجاد نمی‌کردند
+// بازگشت به روال تاچ مستقیم و خالص بدون لغزش دکمه‌ها
 btnLeft.addEventListener('touchstart', (e) => { 
     e.preventDefault(); 
     if(!isPaused && !isBurning) { player.movingLeft = true; playClickSound(); } 
@@ -922,7 +920,7 @@ btnRight.addEventListener('touchend', (e) => {
     player.movingRight = false;
 }, { passive: false });
 
-// کنترلر دسکتاپ (ماوس)
+// ماوس دسکتاپ
 btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; } });
 btnLeft.addEventListener('mouseup', () => player.movingLeft = false);
 btnLeft.addEventListener('mouseleave', () => player.movingLeft = false);
@@ -944,3 +942,4 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
+
