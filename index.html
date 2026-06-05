@@ -179,11 +179,13 @@
             text-shadow: 0 0 60px rgba(250, 204, 21, 0.5), 0 4px 20px rgba(0,0,0,0.6);
             opacity: 0;
             transform: scale(1.7);
-            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.75s ease-out;
         }
         #countdownText.animate {
-            transform: scale(0.95);
-            opacity: 1;
+            animation: cdScale 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes cdScale {
+            0% { transform: scale(1.7); opacity: 0; }
+            100% { transform: scale(0.95); opacity: 1; }
         }
 
         #rewardToast {
@@ -500,12 +502,12 @@ let enemies = [];
 let particles = [];
 let sceneryItems = [];
 let lastSpawnLane = -1; 
-let animationFrameId = null; // Fixes overlapping game loops in Telegram WebApp
+let animationFrameId = null; 
 
 const player = {
     x: 250, y: 520, 
     width: 58, height: 84, 
-    speed: 9.2, 
+    speed: 550, // Converted to per-second speed logic for absolute smoothness
     movingLeft: false, movingRight: false
 };
 
@@ -552,7 +554,6 @@ function updateAndDrawScenery(speed, dt) {
         if (isPlaying && !isPaused && !isBurning) item.y += speed * dt;
         if (item.y > canvas.height + 40) item.y = -40;
 
-        // Original requested graphics completely restored
         ctx.beginPath(); ctx.moveTo(item.x, item.y + 10); ctx.lineTo(item.x - 10, item.y + 30); ctx.lineTo(item.x + 10, item.y + 30); ctx.closePath(); ctx.fill();
         ctx.beginPath(); ctx.moveTo(item.x, item.y); ctx.lineTo(item.x - 7, item.y + 16); ctx.lineTo(item.x + 7, item.y + 16); ctx.closePath(); ctx.fill();
     }
@@ -723,8 +724,8 @@ function startCountdown() {
         if (current < states.length) {
             countdownText.innerText = states[current];
             countdownText.classList.remove('animate');
-            void countdownText.offsetWidth; 
-            countdownText.classList.add('animate');
+            // Fixed standard CSS reflow flash workaround
+            setTimeout(() => { countdownText.classList.add('animate'); }, 10);
             current++;
             setTimeout(nextTick, 850);
         } else {
@@ -777,15 +778,15 @@ function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
     let dt = (currentTime - lastTime) / 1000;
-    if (dt > 0.016) dt = 0.016; 
+    if (dt > 0.05) dt = 0.016; // Capped delta to handle unexpected background tabs or frame drops smoothly
     lastTime = currentTime;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawRoad(dt);
 
     if (isPlaying && !isPaused && !isBurning) {
-        if (player.movingLeft) player.x -= player.speed;
-        if (player.movingRight) player.x += player.speed;
+        if (player.movingLeft) player.x -= player.speed * dt;
+        if (player.movingRight) player.x += player.speed * dt;
     }
 
     if (!isBurning) {
