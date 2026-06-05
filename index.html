@@ -211,7 +211,6 @@
             transform: translateX(-50%) scale(1);
         }
 
-        /* صفحه قفل اختصاصی تلگرام */
         #authLockScreen {
             position: absolute;
             top: 0;
@@ -299,7 +298,6 @@
 </div>
 
 <script>
-// --- لیست سفید کاربران مجاز تلگرام (آی‌دی عددی یا یوزرنیم بدون @) ---
 const ALLOWED_USERS = [
     2049044424,         
     "your_username"    
@@ -314,7 +312,6 @@ function checkTelegramAuthorization() {
     const welcomeScreen = document.getElementById('welcomeScreen');
     const user = tg.initDataUnsafe?.user;
 
-    // جهت تست در مرورگر معمولی خارج از تلگرام، بازی قفل نمیشود
     if (!tg.initData || !user) {
         authLockScreen.style.display = 'none';
         welcomeScreen.style.display = 'flex';
@@ -368,7 +365,6 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-// --- بخش صوتی تقویت‌شده با ولوم روان ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicInterval = null;
 let musicStep = 0;
@@ -386,8 +382,7 @@ function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
     osc.type = type;
     osc.frequency.setValueAtTime(freq, now);
     
-    // ولوم بالانس شده و نرمال بدون نویز
-    gain.gain.setValueAtTime(vol * 0.5, now);
+    gain.gain.setValueAtTime(vol, now);
     gain.gain.linearRampToValueAtTime(0.001, now + duration);
     
     osc.connect(gain);
@@ -401,7 +396,8 @@ function playMusicNode() {
     const freq = luxuryMelody[musicStep % luxuryMelody.length];
     musicStep++;
     if (freq === 0) return;
-    playSoundEffect(freq, 0.18, 0.42, 'triangle'); 
+    // ولوم ملودی بازی قوی‌تر شد تا کاملاً هم‌تراز صدای سوختن شود
+    playSoundEffect(freq, 0.18, 0.55, 'triangle'); 
 }
 
 function startMusic() { stopMusic(); musicStep = 0; musicInterval = setInterval(playMusicNode, 180); } 
@@ -409,13 +405,12 @@ function stopMusic() { if (musicInterval) { clearInterval(musicInterval); musicI
 
 function playClickSound() { playSoundEffect(800, 0.02, 0.15, 'sine'); }
 
-// ولوم هماهنگ و روان ملودی باخت
 function playMarioDeathSound() {
     const mNotes = [440, 392, 349, 293];
     const timings = [0.0, 0.06, 0.12, 0.18]; 
     const durations = [0.05, 0.05, 0.05, 0.15]; 
     mNotes.forEach((freq, idx) => {
-        playSoundEffect(freq, durations[idx], 0.42, 'sawtooth', timings[idx]);
+        playSoundEffect(freq, durations[idx], 0.55, 'sawtooth', timings[idx]);
     });
 }
 
@@ -427,7 +422,6 @@ function playRewardSound() {
     });
 }
 
-// --- بخش گرافیک و پیش‌رندر ماشین‌ها (بدون هیچ تغییری) ---
 const stageJobs = [
     { key: 'taxi', name: 'TAXI', color: '#facc15', type: 'STANDARD' },
     { key: 'police', name: 'POLICE', color: '#1e293b', type: 'SPEED_OBSTACLE' }, 
@@ -511,7 +505,7 @@ let lastSpawnLane = -1;
 const player = {
     x: 250, y: 520, 
     width: 58, height: 84, 
-    speed: 520, 
+    speed: 510, // سرعت روان جابجایی بر پایه dt تغییر کرد
     movingLeft: false, movingRight: false
 };
 
@@ -783,9 +777,9 @@ function loop(currentTime) {
     drawRoad(dt);
 
     if (isPlaying && !isPaused && !isBurning) {
-        // فیکس نهایی کنترل تاچ به صورت آنی و روان بدون لگ ثابت پیکسلی
-        if (player.movingLeft) player.x -= 8.5;
-        if (player.movingRight) player.x += 8.5;
+        // تغییر اساسی برای رفع لگ: جابجایی بر اساس فریم‌ریت و زمان‌بندی دقیق (dt) بازنویسی شد
+        if (player.movingLeft) player.x -= player.speed * dt;
+        if (player.movingRight) player.x += player.speed * dt;
     }
 
     if (!isBurning) {
@@ -843,4 +837,3 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
-
