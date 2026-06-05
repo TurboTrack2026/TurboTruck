@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Fixed & Ultra Smooth</title>
+    <title>Turbo Track - Ultra Smooth & Chill</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -367,59 +367,62 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
+// Ultra-lightweight Audio Context Architecture
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let musicInterval = null;
+let musicTimer = 0;
 let musicStep = 0;
 
-const luxuryMelody = [
-    185, 0, 220, 0, 185, 185, 246, 0,
-    220, 0, 185, 0, 220, 246, 185, 0
-];
+// New ultra-smooth, chill & gentle ambient melody progression (Zero CPU overhead)
+const softMelody = [164.81, 0, 196.00, 0, 220.00, 0, 196.00, 0, 164.81, 164.81, 0, 220.00, 0, 246.94, 0, 0];
 
 function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
-    if (isPaused) return; 
-    const now = audioCtx.currentTime + delay;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, now);
-    
-    gain.gain.setValueAtTime(vol * 0.5, now);
-    gain.gain.linearRampToValueAtTime(0.001, now + duration);
-    
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start(now);
-    osc.stop(now + duration + 0.01);
+    if (isPaused || !isPlaying) return; 
+    try {
+        const now = audioCtx.currentTime + delay;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        
+        gain.gain.setValueAtTime(vol * 0.25, now); // Lowered volume to make it super gentle
+        gain.gain.linearRampToValueAtTime(0.0001, now + duration);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.01);
+    } catch(e) {}
 }
 
-function playMusicNode() {
-    if (!isPlaying || isPaused || isBurning) return; 
-    const freq = luxuryMelody[musicStep % luxuryMelody.length];
-    musicStep++;
-    if (freq === 0) return;
-    playSoundEffect(freq, 0.18, 0.55, 'triangle'); 
+function processInlineMusic(dt) {
+    if (!isPlaying || isPaused || isBurning) return;
+    musicTimer += dt;
+    // Ticks smoothly every 240ms inside the main loop (No CPU interval blocking)
+    if (musicTimer >= 0.24) {
+        musicTimer = 0;
+        const freq = softMelody[musicStep % softMelody.length];
+        musicStep++;
+        if (freq > 0) {
+            playSoundEffect(freq, 0.22, 0.35, 'sine'); // Pure soft sine wave instead of harsh triangle
+        }
+    }
 }
 
-function startMusic() { stopMusic(); musicStep = 0; musicInterval = setInterval(playMusicNode, 180); } 
-function stopMusic() { if (musicInterval) { clearInterval(musicInterval); musicInterval = null; } }
-
-function playClickSound() { playSoundEffect(800, 0.02, 0.15, 'sine'); }
+function playClickSound() { playSoundEffect(700, 0.02, 0.1, 'sine'); }
 
 function playMarioDeathSound() {
-    const mNotes = [440, 392, 349, 293];
+    const mNotes = [330, 294, 262, 196];
     const timings = [0.0, 0.06, 0.12, 0.18]; 
-    const durations = [0.05, 0.05, 0.05, 0.15]; 
     mNotes.forEach((freq, idx) => {
-        playSoundEffect(freq, durations[idx], 0.55, 'sawtooth', timings[idx]);
+        playSoundEffect(freq, 0.12, 0.3, 'sine', timings[idx]);
     });
 }
 
-function playBeep() { playSoundEffect(550, 0.08, 0.2, 'sine'); }
+function playBeep() { playSoundEffect(440, 0.06, 0.15, 'sine'); }
 
 function playRewardSound() {
-    [523, 659, 784].forEach((f, i) => {
-        playSoundEffect(f, 0.08, 0.2, 'sine', i * 0.06);
+    [392, 523, 659].forEach((f, i) => {
+        playSoundEffect(f, 0.1, 0.15, 'sine', i * 0.06);
     });
 }
 
@@ -507,7 +510,7 @@ let animationFrameId = null;
 const player = {
     x: 250, y: 520, 
     width: 58, height: 84, 
-    speed: 550, // Converted to per-second speed logic for absolute smoothness
+    speed: 560, 
     movingLeft: false, movingRight: false
 };
 
@@ -665,7 +668,6 @@ function intersects(x1, y1, w1, h1, x2, y2, w2, h2) {
 
 function triggerCarBurnEffect() {
     isBurning = true;
-    stopMusic(); 
     playMarioDeathSound();
     
     let burnCounter = 0;
@@ -724,7 +726,6 @@ function startCountdown() {
         if (current < states.length) {
             countdownText.innerText = states[current];
             countdownText.classList.remove('animate');
-            // Fixed standard CSS reflow flash workaround
             setTimeout(() => { countdownText.classList.add('animate'); }, 10);
             current++;
             setTimeout(nextTick, 850);
@@ -734,7 +735,7 @@ function startCountdown() {
             isPlaying = true; isPaused = false; isBurning = false;
             pauseBtn.innerText = "Pause"; pauseBtn.style.display = 'block';
             lastTime = performance.now();
-            startMusic(); 
+            musicTimer = 0; musicStep = 0;
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
             animationFrameId = requestAnimationFrame(loop);
         }
@@ -762,7 +763,6 @@ function gameOver() {
 
 function resetGame() {
     if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-    stopMusic(); 
     score = 0; currentStageIndex = 0; passedCarsCount = 0; lastSpawnLane = -1;
     isBurning = false;
     updateScoreUI();
@@ -778,8 +778,11 @@ function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
     let dt = (currentTime - lastTime) / 1000;
-    if (dt > 0.05) dt = 0.016; // Capped delta to handle unexpected background tabs or frame drops smoothly
+    if (dt > 0.05) dt = 0.016; 
     lastTime = currentTime;
+
+    // Process ambient music smoothly inline without freezing the browser thread
+    processInlineMusic(dt);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawRoad(dt);
