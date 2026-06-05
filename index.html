@@ -25,13 +25,18 @@
         .pause-btn { padding: 7px 15px; font-size: 11px; font-weight: 800; color: #ffffff; background: rgba(15, 21, 32, 0.9); border: 1px solid #00e5ff; border-radius: 10px; cursor: pointer; pointer-events: auto; display: none; margin-left: 10px; white-space: nowrap; }
         #controls { display: flex; justify-content: center; gap: 80px; align-items: center; width: 100%; position: absolute; bottom: 110px; padding: 0 25px; pointer-events: none; z-index: 5; }
         .btn { width: 84px; height: 84px; border: 2px solid rgba(255, 255, 255, 0.25); border-radius: 50%; color: white; font-size: 32px; background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); cursor: pointer; outline: none; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; }
+        
+        /* Welcome Screen (بدون هیچ دکمه‌ای - صرفاً حالت لودینگ خودکار) */
         .screen-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
-        #welcomeScreen { background: #07090e; }
-        .welcome-title { color: #00e5ff; font-size: 36px; font-weight: 900; letter-spacing: 2px; margin-bottom: 40px; text-shadow: 0 0 25px rgba(0, 229, 255, 0.5); }
+        #welcomeScreen { background: #07090e; display: none; text-align: center; }
+        .welcome-title { color: #00e5ff; font-size: 36px; font-weight: 900; letter-spacing: 2px; margin-bottom: 10px; text-shadow: 0 0 25px rgba(0, 229, 255, 0.5); font-style: italic; }
+        .welcome-desc { color: #64748b; font-size: 14px; font-weight: bold; letter-spacing: 1px; }
+
         #gameOverScreen { background: rgba(7, 9, 14, 0.96); display: none; }
         .game-over-title { color: #ff2222; font-size: 42px; font-weight: 900; margin-bottom: 40px; text-shadow: 0 0 25px rgba(255, 34, 34, 0.5); }
-        .menu-btn { padding: 15px 50px; font-size: 15px; font-weight: bold; color: #ffffff; background: #11151d; border: 2px solid #00e5ff; border-radius: 30px; cursor: pointer; text-transform: uppercase; }
-        #restartBtn { border-color: #ff2222; }
+        .menu-btn { padding: 16px 55px; font-size: 16px; font-weight: 900; color: white; background: #ff2222; border: none; border-radius: 30px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 0 20px rgba(255,34,34,0.4); transition: transform 0.1s ease; }
+        .menu-btn:active { transform: scale(0.96); }
+        
         #countdownOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; align-items: center; justify-content: center; background: rgba(5, 7, 10, 0.85); z-index: 9; }
         #countdownText { font-size: 280px; font-weight: 900; color: #facc15; text-shadow: 0 0 60px rgba(250, 204, 21, 0.5), 0 4px 20px rgba(0,0,0,0.6); opacity: 0; transform: scale(1.7); transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.75s ease-out; }
         #countdownText.animate { transform: scale(0.95); opacity: 1; }
@@ -42,7 +47,7 @@
 <body>
 
 <div id="gameContainer">
-    <div id="unauthorizedScreen">
+    <div id="unauthorizedScreen" style="display: none;">
         <div class="lock-icon">🔒</div>
         <div class="auth-title">ACCESS DENIED</div>
         <div class="auth-desc">
@@ -72,7 +77,7 @@
 
     <div id="welcomeScreen" class="screen-overlay">
         <div class="welcome-title">TURBO TRACK</div>
-        <button id="startBtn" class="menu-btn">Start Race</button>
+        <div class="welcome-desc">Verifying VIP Access...</div>
     </div>
 
     <div id="gameOverScreen" class="screen-overlay">
@@ -94,6 +99,7 @@ const ALLOWED_USERS = [
 
 const tg = window.Telegram.WebApp;
 const unauthorizedScreen = document.getElementById('unauthorizedScreen');
+const welcomeScreen = document.getElementById('welcomeScreen');
 const displayUserId = document.getElementById('displayUserId');
 
 function checkAuthorization() {
@@ -104,16 +110,22 @@ function checkAuthorization() {
 
     if (user && user.id) {
         const userId = user.id;
-        displayUserId.innerText = userId;
 
         if (ALLOWED_USERS.includes(userId)) {
+            // کاربر مجاز است؛ مستقیماً و بدون نیاز به کلیک دکمه وارد بازی می‌شود
             unauthorizedScreen.style.display = 'none';
-            initGameEngine();
+            welcomeScreen.style.display = 'none';
+            initGameEngine(true); 
         } else {
+            // کاربر غیر مجاز؛ صفحه قفل انگلیسی بدون دکمه باز می‌شود
+            displayUserId.innerText = userId;
             unauthorizedScreen.style.display = 'flex';
+            welcomeScreen.style.display = 'none';
         }
     } else {
+        // باز شدن خارج از تلگرام
         unauthorizedScreen.style.display = 'flex';
+        welcomeScreen.style.display = 'none';
         displayUserId.innerText = "OPEN IN TELEGRAM";
     }
 }
@@ -121,16 +133,14 @@ function checkAuthorization() {
 window.addEventListener('load', checkAuthorization);
 
 // هسته بازی
-function initGameEngine() {
+function initGameEngine(autoStart = false) {
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
     ctx.imageSmoothingEnabled = true;
 
-    const welcomeScreen = document.getElementById('welcomeScreen');
     const gameOverScreen = document.getElementById('gameOverScreen');
     const countdownOverlay = document.getElementById('countdownOverlay');
     const countdownText = document.getElementById('countdownText');
-    const startBtn = document.getElementById('startBtn');
     const restartBtn = document.getElementById('restartBtn');
     const pauseBtn = document.getElementById('pauseBtn');
     const sbPass = document.getElementById('sbPass');
@@ -263,10 +273,6 @@ function initGameEngine() {
 
     function updateScoreUI() { sbPass.innerText = `PASS: ${passedCarsCount}/10`; sbScore.innerText = `SCORE: ${score}`; sbStage.innerText = `STAGE: ${currentStageIndex + 1}`; }
 
-    if (ALLOWED_USERS.includes(tg.initDataUnsafe?.user?.id)) {
-        // Double check safety
-    }
-
     function checkStageProgression() {
         passedCarsCount++;
         if (passedCarsCount >= 10) {
@@ -350,7 +356,7 @@ function initGameEngine() {
     }
 
     function startCountdown() {
-        welcomeScreen.style.display = 'none'; gameOverScreen.style.display = 'none'; pauseBtn.style.display = 'none'; countdownOverlay.style.display = 'flex';
+        gameOverScreen.style.display = 'none'; pauseBtn.style.display = 'none'; countdownOverlay.style.display = 'flex';
         let states = ['3', '2', '1'], current = 0;
         function nextTick() {
             if (current < states.length) { countdownText.innerText = states[current]; countdownText.classList.remove('animate'); void countdownText.offsetWidth; countdownText.classList.add('animate'); current++; setTimeout(nextTick, 850);
@@ -389,10 +395,13 @@ function initGameEngine() {
     btnRight.addEventListener('touchstart', (e) => { if (e.cancelable) e.preventDefault(); if(!isPaused && !isBurning) { player.movingRight = true; playClickSound(); } }, { passive: false });
     btnRight.addEventListener('touchend', (e) => { if (e.cancelable) e.preventDefault(); player.movingRight = false; }, { passive: false });
 
-    startBtn.addEventListener('click', resetGame);
     restartBtn.addEventListener('click', resetGame);
 
-    window.addEventListener('load', () => { resizeCanvas(); player.x = canvas.width / 2; player.y = 500; initScenery(); });
+    if (autoStart) {
+        resetGame();
+    } else {
+        window.addEventListener('load', () => { resizeCanvas(); player.x = canvas.width / 2; player.y = 500; initScenery(); });
+    }
 }
 </script>
 
