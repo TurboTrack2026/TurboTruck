@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Fixed Player</title>
+    <title>Turbo Track - Smooth Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -211,7 +211,6 @@
             transform: translateX(-50%) scale(1);
         }
 
-        /* صفحه اختصاصی خطای دسترسی کاملاً انگلیسی، لاکچری و بدون دکمه */
         #authErrorScreen {
             position: absolute;
             top: 0;
@@ -311,10 +310,9 @@
 </div>
 
 <script>
-// --- لیست سفید کاربران مجاز (آیدی‌های عددی یا یوزرنیم‌ها را اینجا بنویس) ---
 const ALLOWED_USERS = [
-    123456789,         // آیدی عددی خودت یا کاربرانت را اینجا قرار بده
-    "your_username"    // یوزرنیم بدون @ داخل کوتیشن
+    123456789,         
+    "your_username"    
 ];
 
 function verifyTelegramAccess() {
@@ -324,7 +322,6 @@ function verifyTelegramAccess() {
 
     const authErrorScreen = document.getElementById('authErrorScreen');
     const welcomeScreen = document.getElementById('welcomeScreen');
-
     const user = tg.initDataUnsafe?.user;
 
     if (!tg.initData || !user) {
@@ -381,7 +378,7 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-// --- تعریف شیء ماشین بازیکن (YOU) با مختصات فیکس شده ---
+// --- تعریف و فیکس ساختار شیء ماشین بازیکن ---
 const player = {
     x: canvas.width / 2,
     y: 500,
@@ -557,9 +554,7 @@ function checkStageProgression() {
     if (passedCarsCount >= 10) {
         passedCarsCount = 0;
         currentStageIndex = (currentStageIndex < stageJobs.length - 1) ? currentStageIndex + 1 : 0;
-        
         currentRoadSpeed = 540 + (currentStageIndex * speedMultiplierPerStage);
-        
         showRewardNotification("تبریک! شما جایزه ی خفن این مرحله رو بردید!");
     }
     updateScoreUI();
@@ -600,13 +595,13 @@ function updateAndDrawScenery(speed, dt) {
 class ExplodeParticle {
     constructor(x, y, isFire = false) {
         this.x = x; this.y = y; this.isFire = isFire;
-        this.radius = isFire ? Math.random() * 6 + 2 : Math.random() * 2.5 + 1;
+        this.radius = isFire ? Math.random() * 5 + 2 : Math.random() * 2 + 1;
         const angle = Math.random() * Math.PI * 2;
-        const speed = isFire ? Math.random() * 120 + 30 : Math.random() * 180 + 80;
+        const speed = isFire ? Math.random() * 110 + 30 : Math.random() * 160 + 70;
         this.vx = Math.cos(angle) * speed; 
-        this.vy = isFire ? (Math.sin(angle) * speed * 0.4) - 45 : Math.sin(angle) * speed; 
+        this.vy = isFire ? (Math.sin(angle) * speed * 0.4) - 40 : Math.sin(angle) * speed; 
         this.alpha = 1;
-        this.decay = isFire ? Math.random() * 0.9 + 0.9 : 1.6;
+        this.decay = isFire ? Math.random() * 0.9 + 1.0 : 1.8;
         if (isFire) {
             this.color = ['#d32f2f', '#f57c00', '#fbc02d', '#5c6bc0', '#212121'][Math.floor(Math.random() * 5)];
         } else {
@@ -617,7 +612,7 @@ class ExplodeParticle {
         this.x += this.vx * dt; 
         this.y += this.vy * dt; 
         this.alpha -= this.decay * dt; 
-        if (this.isFire && this.radius > 0.4) this.radius -= 1.8 * dt; 
+        if (this.isFire && this.radius > 0.4) this.radius -= 1.5 * dt; 
     }
     draw() {
         if (this.alpha <= 0) return;
@@ -700,15 +695,15 @@ function triggerCarBurnEffect() {
     
     let burnCounter = 0;
     const burnInterval = setInterval(() => {
-        for (let p = 0; p < 6; p++) {
-            particles.push(new ExplodeParticle(player.x + (Math.random()*20 - 10), player.y + (Math.random()*26 - 13), true));
+        for (let p = 0; p < 4; p++) {
+            particles.push(new ExplodeParticle(player.x + (Math.random()*16 - 8), player.y + (Math.random()*20 - 10), true));
         }
         burnCounter++;
-        if (burnCounter > 16) { 
+        if (burnCounter > 12) { 
             clearInterval(burnInterval);
             gameOver();
         }
-    }, 45);
+    }, 50);
 }
 
 function drawRoad(dt) {
@@ -801,7 +796,8 @@ function resetGame() {
 function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
-    let dt = (currentTime - lastTime) / 1000;
+    // روان‌سازی فریم‌ها با محدود کردن بیشینه‌ی زمان دلتا لقمه‌ای
+    let dt = Math.min((currentTime - lastTime) / 1000, 0.1);
     lastTime = currentTime;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
