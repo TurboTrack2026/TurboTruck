@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Gold Neon Smooth</title>
+    <title>Turbo Track - Neon Blue Mario Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -49,14 +49,14 @@
             z-index: 6;
             pointer-events: none;
         }
+        /* Neon Blue Scoreboard with GPU-friendly shadow drop */
         #scoreBoard {
             color: #ffffff;
             font-size: 11px; 
             font-weight: 800;
-            letter-spacing: 0.3px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-            background: rgba(15, 21, 32, 0.88);
-            border: 1px solid rgba(212, 175, 55, 0.2);
+            letter-spacing: 0.5px;
+            background: rgba(7, 11, 19, 0.9);
+            border: 1px solid #00d2ff;
             border-radius: 10px;
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
@@ -65,6 +65,7 @@
             gap: 14px; 
             padding: 8px 14px; 
             flex-grow: 1;
+            filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.6));
         }
         .sb-item {
             white-space: nowrap;
@@ -74,17 +75,17 @@
             font-size: 11px;
             font-weight: 800;
             color: #ffffff;
-            background: rgba(15, 21, 32, 0.9);
-            border: 1px solid #d4af37;
+            background: rgba(7, 11, 19, 0.9);
+            border: 1px solid #00d2ff;
             border-radius: 10px;
             cursor: pointer;
             pointer-events: auto;
             display: none;
             margin-left: 10px; 
             white-space: nowrap;
+            box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
         }
 
-        /* Controls adjusted lower for perfect thumb ergonomics */
         #controls {
             display: flex;
             justify-content: center;
@@ -131,13 +132,14 @@
         }
         
         #welcomeScreen { background: #07090e; display: none; }
+        /* Neon Blue Welcome Title */
         .welcome-title {
-            color: #d4af37;
-            font-size: 36px;
+            color: #00d2ff;
+            font-size: 38px;
             font-weight: 900;
             letter-spacing: 2px;
             margin-bottom: 40px;
-            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            filter: drop-shadow(0 0 12px rgba(0, 210, 255, 0.8));
         }
         
         #gameOverScreen { background: rgba(7, 9, 14, 0.96); display: none; }
@@ -155,14 +157,14 @@
             font-weight: bold;
             color: #ffffff;
             background: #11151d;
-            border: 2px solid #d4af37;
+            border: 2px solid #00d2ff;
             border-radius: 30px;
             cursor: pointer;
             text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
         }
-        #restartBtn { border-color: #ff2222; }
+        #restartBtn { border-color: #ff2222; box-shadow: 0 0 10px rgba(255,34,34,0.3); }
 
-        /* Hardware Accelerated Gold Neon Countdown System */
         #countdownOverlay {
             position: absolute;
             top: 0;
@@ -178,8 +180,7 @@
         #countdownText {
             font-size: 240px; 
             font-weight: 900;
-            color: #ffdf00; /* Vibrant Gold Core */
-            /* GPU optimized filter drop shadow for neon effect without CPU stutter */
+            color: #ffdf00; 
             filter: drop-shadow(0 0 12px #d4af37) drop-shadow(0 0 35px #aa7c11);
             opacity: 1;
             transform: scale(1);
@@ -191,13 +192,13 @@
             top: 95px;
             left: 50%;
             transform: translateX(-50%) scale(0.85);
-            background: #facc15;
+            background: #00d2ff;
             color: #000000;
             padding: 14px 24px;
             font-size: 14px;
             font-weight: 900;
             border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(250, 204, 21, 0.5);
+            box-shadow: 0 8px 30px rgba(0, 210, 255, 0.5);
             z-index: 8;
             opacity: 0;
             pointer-events: none;
@@ -369,9 +370,17 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicTimer = 0;
 let musicStep = 0;
 
-const fastFuriousMelody = [73.42, 73.42, 110.00, 0, 98.00, 98.00, 146.83, 0, 87.31, 87.31, 130.81, 0, 73.42, 0, 164.81, 0];
+// High-Performance Super Mario Overworld Theme Chords (Extremely light synthesized memory footprint)
+const marioThemeMelody = [
+    659.25, 659.25, 0, 659.25, 0, 523.25, 659.25, 0,
+    783.99, 0, 0, 0, 392.00, 0, 0, 0,
+    523.25, 0, 0, 392.00, 0, 0, 329.63, 0,
+    0, 440.00, 0, 493.88, 0, 466.16, 440.00, 0,
+    392.00, 659.25, 783.99, 880.00, 0, 698.46, 783.99,
+    0, 659.25, 0, 523.25, 587.33, 493.88, 0, 0
+];
 
-function playSoundEffect(freq, duration, vol, type = 'sawtooth', delay = 0) {
+function playSoundEffect(freq, duration, vol, type = 'square', delay = 0) {
     if (isPaused || !isPlaying) return; 
     try {
         const now = audioCtx.currentTime + delay;
@@ -380,7 +389,8 @@ function playSoundEffect(freq, duration, vol, type = 'sawtooth', delay = 0) {
         osc.type = type;
         osc.frequency.setValueAtTime(freq, now);
         
-        gain.gain.setValueAtTime(vol * 0.35, now); 
+        // Lowered sound footprint volume slightly as per request
+        gain.gain.setValueAtTime(vol * 0.18, now); 
         gain.gain.linearRampToValueAtTime(0.0001, now + duration);
         
         osc.connect(gain);
@@ -393,17 +403,18 @@ function playSoundEffect(freq, duration, vol, type = 'sawtooth', delay = 0) {
 function processInlineMusic(dt) {
     if (!isPlaying || isPaused || isBurning) return;
     musicTimer += dt;
-    if (musicTimer >= 0.25) {
+    // Paced perfectly to match original tempo smoothly
+    if (musicTimer >= 0.15) {
         musicTimer = 0;
-        const freq = fastFuriousMelody[musicStep % fastFuriousMelody.length];
+        const freq = marioThemeMelody[musicStep % marioThemeMelody.length];
         musicStep++;
         if (freq > 0) {
-            playSoundEffect(freq, 0.22, 0.22, 'sawtooth'); 
+            playSoundEffect(freq, 0.11, 0.18, 'square'); 
         }
     }
 }
 
-function playClickSound() { playSoundEffect(500, 0.02, 0.15, 'sine'); }
+function playClickSound() { playSoundEffect(500, 0.02, 0.10, 'sine'); }
 
 function playMarioDeathSound() {
     const marioDeathSequence = [
@@ -417,15 +428,15 @@ function playMarioDeathSound() {
         {f: 261.63, d: 0.25}  
     ];
     marioDeathSequence.forEach((note, idx) => {
-        playSoundEffect(note.f, note.d, 0.28, 'triangle', idx * 0.09);
+        playSoundEffect(note.f, note.d, 0.22, 'triangle', idx * 0.08);
     });
 }
 
-function playBeep() { playSoundEffect(587.33, 0.08, 0.20, 'sine'); }
+function playBeep() { playSoundEffect(587.33, 0.08, 0.15, 'sine'); }
 
 function playRewardSound() {
     [349.23, 440.00, 523.25, 698.46].forEach((f, i) => {
-        playSoundEffect(f, 0.12, 0.22, 'sine', i * 0.05);
+        playSoundEffect(f, 0.12, 0.15, 'sine', i * 0.05);
     });
 }
 
@@ -439,7 +450,6 @@ const stageJobs = [
 
 const vehicleCacheCanvases = {};
 
-// Optimization: High-performance flat cached drawing vectors to lower memory footprint
 function generateVehicleGraphicsCache(key, color, name, isPlayer = false) {
     const w = 90, h = 130;
     const cacheCanvas = document.createElement('canvas');
@@ -538,30 +548,35 @@ function showRewardNotification(text) {
 
 function initScenery() {
     sceneryItems = [];
-    // Spaced elegantly for modern, neat green bush distribution on track sides
-    for (let y = -100; y < canvas.height + 100; y += 240) {
-        sceneryItems.push({ x: canvas.width * 0.04, y: y });
-        sceneryItems.push({ x: canvas.width * 0.96, y: y + 120 });
+    const colors = ['#ef4444', '#ec4899', '#eab308']; // Vivid Red, Pink, Yellow Flowers
+    for (let y = -100; y < canvas.height + 100; y += 190) {
+        sceneryItems.push({ x: canvas.width * 0.04, y: y, color: colors[Math.floor(Math.random() * 3)] });
+        sceneryItems.push({ x: canvas.width * 0.96, y: y + 95, color: colors[Math.floor(Math.random() * 3)] });
     }
 }
 
-// Optimization: Renders smooth round bushes instead of heavy complex shapes
+// Renders lightweight multi-colored luxury flowers alongside track borders
 function updateAndDrawScenery(speed, dt) {
-    ctx.fillStyle = '#1e3a27';
+    ctx.fillStyle = '#1b3323';
     ctx.fillRect(0, 0, canvas.width * 0.08, canvas.height);
     ctx.fillRect(canvas.width * 0.92, 0, canvas.width * 0.08, canvas.height);
 
     const len = sceneryItems.length;
-    ctx.fillStyle = '#16a34a'; // Vibrant natural bush tone
     for(let i=0; i<len; i++) {
         const item = sceneryItems[i];
         if (isPlaying && !isPaused && !isBurning) item.y += speed * dt;
-        if (item.y > canvas.height + 30) item.y = -30;
+        if (item.y > canvas.height + 25) item.y = -25;
 
-        // Clean stacked vector spheres for rendering lightweight elegant bushes
-        ctx.beginPath(); ctx.arc(item.x, item.y, 11, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(item.x - 5, item.y + 6, 8, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(item.x + 5, item.y + 6, 8, 0, Math.PI * 2); ctx.fill();
+        // Petals layout vector cache simulation
+        ctx.fillStyle = item.color;
+        ctx.beginPath(); ctx.arc(item.x - 4, item.y, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(item.x + 4, item.y, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(item.x, item.y - 4, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(item.x, item.y + 4, 5, 0, Math.PI * 2); ctx.fill();
+        
+        // Flower center core
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath(); ctx.arc(item.x, item.y, 3, 0, Math.PI * 2); ctx.fill();
     }
 }
 
@@ -666,8 +681,9 @@ function handleEnemies(dt) {
     }
 }
 
+// Ultra sensitive hitbox module - instantly crashes upon micro-friction
 function intersects(x1, y1, w1, h1, x2, y2, w2, h2) {
-    return x1 - w1/2.3 < x2 + w2/2.3 && x1 + w1/2.3 > x2 - w2/2.3 && y1 - h1/2.3 < y2 + h2/2.3 && y1 + h1/2.3 > y2 - h2/2.3;
+    return x1 - w1/2.02 < x2 + w2/2.02 && x1 + w1/2.02 > x2 - w2/2.02 && y1 - h1/2.02 < y2 + h2/2.02 && y1 + h1/2.02 > y2 - h2/2.02;
 }
 
 function triggerCarBurnEffect() {
@@ -689,7 +705,6 @@ function triggerCarBurnEffect() {
     }, 45);
 }
 
-// Optimization: Cached linear calculation module for absolute stutter-free track movement
 function drawRoad(dt) {
     ctx.fillStyle = '#171c24';
     ctx.fillRect(canvas.width * 0.08, 0, canvas.width * 0.84, canvas.height);
@@ -703,8 +718,9 @@ function drawRoad(dt) {
     ctx.fillRect(leftLimit, 0, 6, canvas.height);
     ctx.fillRect(rightLimit, 0, 6, canvas.height);
 
+    // Ultra sensitive wall touch control
     if (isPlaying && !isPaused && !isBurning) {
-        if (player.x - player.width / 2 <= leftLimit + 6 || player.x + player.width / 2 >= rightLimit) {
+        if (player.x - player.width / 1.95 <= leftLimit + 6 || player.x + player.width / 1.95 >= rightLimit) {
             triggerCarBurnEffect();
             return;
         }
@@ -713,7 +729,6 @@ function drawRoad(dt) {
     ctx.fillStyle = '#ffffff';
     if (!isPaused && !isBurning) roadLinesY = (roadLinesY + baseRoadSpeed * dt) % 70;
 
-    // Optimized math boundaries for fluid lane marking renders
     const lineX1 = canvas.width * 0.38 - 1.5;
     const lineX2 = canvas.width * 0.62 - 1.5;
     for (let y = roadLinesY - 70; y < canvas.height; y += 70) {
@@ -735,7 +750,8 @@ function startCountdown() {
         if (current < states.length) {
             countdownText.innerText = states[current];
             current++;
-            setTimeout(nextTick, 1200);
+            // Increased smoothly to 1600ms for a completely non-abrupt premium soft cadence
+            setTimeout(nextTick, 1600);
         } else {
             countdownOverlay.style.display = 'none';
             playBeep();
