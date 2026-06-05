@@ -313,9 +313,8 @@
 <script>
 // --- لیست سفید کاربران مجاز (یوزرنیم‌ها یا آیدی‌های عددی را اینجا وارد کن) ---
 const ALLOWED_USERS = [
-    2049044424,         // نمونه آیدی عددی
-    "your_username",   // نمونه یوزرنیم اول بدون @
-    "friend_username"  // نمونه یوزرنیم دوم
+    123456789,         
+    "your_username"   
 ];
 
 function verifyTelegramAccess() {
@@ -329,18 +328,15 @@ function verifyTelegramAccess() {
     const initData = tg.initData || "";
     const user = tg.initDataUnsafe?.user;
 
-    // جهت تست خارج از تلگرام (مرورگر معمولی) قفل باز بماند
     if (!initData || !user) {
         authErrorScreen.style.display = 'none';
         welcomeScreen.style.display = 'flex';
         return;
     }
 
-    // گرفتن اطلاعات کاربری که در حال حاضر دکمه استارت مینی‌اپ را زده است
     const currentUserId = user.id ? Number(user.id) : null;
     const currentUsername = user.username ? user.username.toLowerCase().trim() : "";
 
-    // بررسی دقیق: آیا کاربر فعلی در لیست سفید بالا وجود دارد یا خیر؟
     const isAllowed = ALLOWED_USERS.some(allowed => {
         if (typeof allowed === 'number' && currentUserId !== null) {
             return allowed === currentUserId;
@@ -361,7 +357,6 @@ function verifyTelegramAccess() {
     }
 }
 
-// اجرای چک امنیتی بلافاصله پس از لود شدن برنامه
 window.addEventListener('load', verifyTelegramAccess);
 
 const canvas = document.getElementById('gameCanvas');
@@ -387,7 +382,6 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-// --- سیستم صوتی دقیق هماهنگ‌شده با ولوم ثابت 0.45 ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicInterval = null;
 let musicStep = 0;
@@ -436,13 +430,13 @@ function playMarioDeathSound() {
 
 function playBeep() { playSoundEffect(550, 0.08, 0.45, 'sine'); }
 
+// منطق اجرای جایزه صوتی کاملاً دست‌نخورده
 function playRewardSound() {
     [523, 659, 784].forEach((f, i) => {
         playSoundEffect(f, 0.08, 0.45, 'sine', i * 0.06);
     });
 }
 
-// لیست مراحل کاملاً بدون دستکاری
 const stageJobs = [
     { key: 'ambulance', name: 'AMBU', type: 'STANDARD', color: '#d32f2f' },
     { key: 'taxi', name: 'TAXI', type: 'STANDARD', color: '#fbc02d' },
@@ -541,14 +535,9 @@ let particles = [];
 let sceneryItems = [];
 let lastSpawnLane = -1; 
 
+// متغیرهای مدیریت سرعت منطق بازی (تغییر تدریجی)
 let currentRoadSpeed = 540; 
-
-const player = {
-    x: 250, y: 500, 
-    width: 58, height: 84, 
-    speed: 520, 
-    movingLeft: false, movingRight: false
-};
+let speedMultiplierPerStage = 160; // ضریب افزایش سرعت خالص بعد از هر مرحله
 
 function updateScoreUI() {
     sbPass.innerText = `PASS: ${passedCarsCount}/10`;
@@ -561,7 +550,11 @@ function checkStageProgression() {
     if (passedCarsCount >= 10) {
         passedCarsCount = 0;
         currentStageIndex = (currentStageIndex < stageJobs.length - 1) ? currentStageIndex + 1 : 0;
-        currentRoadSpeed = 540 + (currentStageIndex * 150);
+        
+        // افزایش گام‌به‌گام سرعت جاده در منطق اصلی بازی به موازات پیشرفت مراحل
+        currentRoadSpeed = 540 + (currentStageIndex * speedMultiplierPerStage);
+        
+        // سیستم جوایز بدون دخالت در سرعت کاملاً مجزا عمل می‌کند
         showRewardNotification("تبریک! شما جایزه ی خفن این مرحله رو بردید!");
     }
     updateScoreUI();
