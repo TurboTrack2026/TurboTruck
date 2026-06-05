@@ -311,53 +311,56 @@
 </div>
 
 <script>
-// --- لیست آیدی‌های مجاز تلگرام (هم آیدی عددی و هم آیدی متنی بدون نیاز به @ قبول است) ---
+// --- لیست کاربران مجاز (آیدی عددی یا یوزرنیم بدون @ را اینجا اضافه کن) ---
 const ALLOWED_USERS = [
     123456789,
-    "2049044424"
+    "آیدی_خودت" 
 ];
 
-// سیستم احراز هویت دوگانه فوق‌العاده حساس و دقیق
 function verifyTelegramAccess() {
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    const user = tg.initDataUnsafe?.user;
     const authErrorScreen = document.getElementById('authErrorScreen');
     const welcomeScreen = document.getElementById('welcomeScreen');
 
-    if (user) {
-        const currentUserId = user.id ? Number(user.id) : null;
-        const currentUsername = user.username ? user.username.toLowerCase().trim() : "";
+    // لود شدن داده‌ی تلگرام را بررسی می‌کنیم
+    const initData = tg.initData || "";
+    const user = tg.initDataUnsafe?.user;
 
-        // بررسی دقیق که آیا ورودی کاربر با آیدی عددی یا آیدی متنی لیست همخوانی دارد یا خیر
-        const isAllowed = ALLOWED_USERS.some(allowed => {
-            if (typeof allowed === 'number' && currentUserId !== null) {
-                return allowed === currentUserId;
-            }
-            if (typeof allowed === 'string' && currentUsername !== "") {
-                // پاک‌سازی یوزرنیم ورودی از کاراکتر @ برای جلوگیری از خطای نوشتن
-                let cleanAllowed = allowed.toLowerCase().replace('@', '').trim();
-                return cleanAllowed === currentUsername;
-            }
-            return false;
-        });
+    // اگـر بازی خارج از محیط مینی‌اپ تلگرام باز شده باشد (جهت تست راحت در مرورگر سیستم یا گوشی)
+    if (!initData || !user) {
+        authErrorScreen.style.display = 'none';
+        welcomeScreen.style.display = 'flex';
+        return;
+    }
 
-        if (isAllowed) {
-            authErrorScreen.style.display = 'none';
-            welcomeScreen.style.display = 'flex';
-        } else {
-            authErrorScreen.style.display = 'flex';
-            welcomeScreen.style.display = 'none';
+    // اگر داخل مینی‌اپ تلگرام باز شده باشد، بررسی فوق‌العاده حساس اجرا می‌شود:
+    const currentUserId = user.id ? Number(user.id) : null;
+    const currentUsername = user.username ? user.username.toLowerCase().trim() : "";
+
+    const isAllowed = ALLOWED_USERS.some(allowed => {
+        if (typeof allowed === 'number' && currentUserId !== null) {
+            return allowed === currentUserId;
         }
+        if (typeof allowed === 'string' && currentUsername !== "") {
+            let cleanAllowed = allowed.toLowerCase().replace('@', '').trim();
+            return cleanAllowed === currentUsername;
+        }
+        return false;
+    });
+
+    if (isAllowed) {
+        authErrorScreen.style.display = 'none';
+        welcomeScreen.style.display = 'flex';
     } else {
         authErrorScreen.style.display = 'flex';
         welcomeScreen.style.display = 'none';
     }
 }
 
-// چک امنیتی بلافاصله در هنگام بالا آمدن سند بازی اجرا می‌گردد
+// اجرای چک امنیتی بلافاصله پس از لود شدن
 window.addEventListener('load', verifyTelegramAccess);
 
 const canvas = document.getElementById('gameCanvas');
@@ -383,7 +386,7 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-// --- سیستم صوتی هماهنگ‌شده با ولوم ثابت 0.45 ---
+// --- سیستم صوتی دقیق هماهنگ‌شده با ولوم ثابت 0.45 ---
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicInterval = null;
 let musicStep = 0;
@@ -438,7 +441,7 @@ function playRewardSound() {
     });
 }
 
-// لیست مراحل کاملاً فیکس و بدون تغییر
+// لیست مراحل کاملاً بدون دستکاری
 const stageJobs = [
     { key: 'ambulance', name: 'AMBU', type: 'STANDARD', color: '#d32f2f' },
     { key: 'taxi', name: 'TAXI', type: 'STANDARD', color: '#fbc02d' },
@@ -796,7 +799,7 @@ function resetGame() {
     startCountdown();
 }
 
-// سیستم رندر ۱۰۰٪ روان و کاملاً هماهنگ با فرکانس مانیتورهای گوناگون گوشی‌ها
+// سیستم لوپ کاملاً نرم و بدون لکنت برای هماهنگی با هر مانیتوری
 function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
