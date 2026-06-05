@@ -500,7 +500,7 @@ let enemies = [];
 let particles = [];
 let sceneryItems = [];
 let lastSpawnLane = -1; 
-let animationFrameId = null;
+let animationFrameId = null; // Fixes overlapping game loops in Telegram WebApp
 
 const player = {
     x: 250, y: 520, 
@@ -552,8 +552,9 @@ function updateAndDrawScenery(speed, dt) {
         if (isPlaying && !isPaused && !isBurning) item.y += speed * dt;
         if (item.y > canvas.height + 40) item.y = -40;
 
-        // Optimized drawing call (Avoid heavy custom paths where possible)
-        ctx.fillRect(item.x - 6, item.y + 10, 12, 15);
+        // Original requested graphics completely restored
+        ctx.beginPath(); ctx.moveTo(item.x, item.y + 10); ctx.lineTo(item.x - 10, item.y + 30); ctx.lineTo(item.x + 10, item.y + 30); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(item.x, item.y); ctx.lineTo(item.x - 7, item.y + 16); ctx.lineTo(item.x + 7, item.y + 16); ctx.closePath(); ctx.fill();
     }
 }
 
@@ -776,7 +777,7 @@ function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
     let dt = (currentTime - lastTime) / 1000;
-    if (dt > 0.016) dt = 0.016; // Prevent lag spikes from pushing game objects outside bounds
+    if (dt > 0.016) dt = 0.016; 
     lastTime = currentTime;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
