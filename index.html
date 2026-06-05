@@ -311,10 +311,11 @@
 </div>
 
 <script>
-// --- لیست کاربران مجاز (آیدی عددی یا یوزرنیم بدون @ را اینجا اضافه کن) ---
+// --- لیست سفید کاربران مجاز (یوزرنیم‌ها یا آیدی‌های عددی را اینجا وارد کن) ---
 const ALLOWED_USERS = [
-    ,
-    "2049044424" 
+    2049044424,         // نمونه آیدی عددی
+    "your_username",   // نمونه یوزرنیم اول بدون @
+    "friend_username"  // نمونه یوزرنیم دوم
 ];
 
 function verifyTelegramAccess() {
@@ -325,21 +326,21 @@ function verifyTelegramAccess() {
     const authErrorScreen = document.getElementById('authErrorScreen');
     const welcomeScreen = document.getElementById('welcomeScreen');
 
-    // لود شدن داده‌ی تلگرام را بررسی می‌کنیم
     const initData = tg.initData || "";
     const user = tg.initDataUnsafe?.user;
 
-    // اگـر بازی خارج از محیط مینی‌اپ تلگرام باز شده باشد (جهت تست راحت در مرورگر سیستم یا گوشی)
+    // جهت تست خارج از تلگرام (مرورگر معمولی) قفل باز بماند
     if (!initData || !user) {
         authErrorScreen.style.display = 'none';
         welcomeScreen.style.display = 'flex';
         return;
     }
 
-    // اگر داخل مینی‌اپ تلگرام باز شده باشد، بررسی فوق‌العاده حساس اجرا می‌شود:
+    // گرفتن اطلاعات کاربری که در حال حاضر دکمه استارت مینی‌اپ را زده است
     const currentUserId = user.id ? Number(user.id) : null;
     const currentUsername = user.username ? user.username.toLowerCase().trim() : "";
 
+    // بررسی دقیق: آیا کاربر فعلی در لیست سفید بالا وجود دارد یا خیر؟
     const isAllowed = ALLOWED_USERS.some(allowed => {
         if (typeof allowed === 'number' && currentUserId !== null) {
             return allowed === currentUserId;
@@ -360,7 +361,7 @@ function verifyTelegramAccess() {
     }
 }
 
-// اجرای چک امنیتی بلافاصله پس از لود شدن
+// اجرای چک امنیتی بلافاصله پس از لود شدن برنامه
 window.addEventListener('load', verifyTelegramAccess);
 
 const canvas = document.getElementById('gameCanvas');
@@ -799,7 +800,6 @@ function resetGame() {
     startCountdown();
 }
 
-// سیستم لوپ کاملاً نرم و بدون لکنت برای هماهنگی با هر مانیتوری
 function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
