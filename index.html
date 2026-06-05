@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Smooth & Elegant Edition</title>
+    <title>Turbo Track - Premium Ultra Smooth</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -374,14 +374,14 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-// کوچک‌تر کردن ابعاد خودروی بازیکن جهت ظرافت و زیبایی (عرض ۴۶، ارتفاع ۶۸) و تنظیم قفل Y: 500
 const player = {
     x: canvas.width / 2,
     y: 500,
     width: 46,
     height: 68,
     movingLeft: false,
-    movingRight: false
+    movingRight: false,
+    speed: 480 // سرعت حرکت افقی (پیکسل بر ثانیه) بر پایه زمان دلتا برای روانی کامل
 };
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -550,78 +550,88 @@ class ExplodeParticle {
     }
 }
 
-// تابع رندر پیشرفته و سبکِ بدنه خودروها با اعمال دقیق سایزهای کوچک‌تر و جزئیات ظاهری قشنگ‌تر
+// تابع ترسیم خودروها با جزئیات کامل: چراغ‌ها، شیشه‌ها، تایرها و سایه واقعی تفکیک‌شده
 function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = false) {
     ctx.save();
     ctx.translate(x, y);
 
-    // سایه اسموت زیر خودرو
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    // ۱. سایه اسموت و دقیق زیر ماشین جهت القای حس سه بعدی
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.beginPath();
-    ctx.roundRect(-width/2 + 3, -height/2 + 5, width, height, 10);
+    ctx.roundRect(-width/2 + 4, -height/2 + 6, width - 2, height - 2, 12);
     ctx.fill();
 
     const isBike = (type === 'BIKE');
-    const coreW = isBike ? width * 0.55 : width * 0.9;
+    const coreW = isBike ? width * 0.55 : width * 0.92;
 
-    // تایرها با اندازه متناسب
+    // ۲. لاستیک‌های با جزئیات و رینگ‌دار دورتادور ماشین
     ctx.fillStyle = '#0f172a';
     if (!isBike) {
-        ctx.fillRect(-width/2 - 1, -height/2 + 10, 4, 12);
-        ctx.fillRect(width/2 - 3, -height/2 + 10, 4, 12);
-        ctx.fillRect(-width/2 - 1, height/2 - 22, 4, 12);
-        ctx.fillRect(width/2 - 3, height/2 - 22, 4, 12);
+        // چرخ‌های جلو
+        ctx.fillRect(-width/2 - 2, -height/2 + 10, 5, 13);
+        ctx.fillRect(width/2 - 3, -height/2 + 10, 5, 13);
+        // چرخ‌های عقب
+        ctx.fillRect(-width/2 - 2, height/2 - 23, 5, 13);
+        ctx.fillRect(width/2 - 3, height/2 - 23, 5, 13);
     } else {
-        ctx.fillRect(-2, -height/2 + 5, 4, 14);
-        ctx.fillRect(-2, height/2 - 19, 4, 14);
+        ctx.fillRect(-2.5, -height/2 + 5, 5, 15);
+        ctx.fillRect(-2.5, height/2 - 20, 5, 15);
     }
 
-    // بدنه اصلی آیرودینامیک ماشین
+    // ۳. بدنه اصلی و خوش‌فرم خودرو
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.roundRect(-coreW/2, -height/2, coreW, height, isBike ? 6 : 12);
+    ctx.roundRect(-coreW/2, -height/2, coreW, height, isBike ? 6 : 14);
     ctx.fill();
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 1.5;
     ctx.strokeStyle = '#020617';
     ctx.stroke();
 
-    // شیشه‌ها و سقف براق (کابین لوکس)
-    ctx.fillStyle = 'rgba(15,23,42,0.9)';
+    // ۴. پنجره‌ها و کابین لوکس با رفلکس شیشه
+    ctx.fillStyle = 'rgba(15,23,42,0.92)';
     ctx.beginPath();
     if (!isBike) {
-        ctx.roundRect(-coreW/2 + 4, -height/5, coreW - 8, height * 0.5, 5);
+        ctx.roundRect(-coreW/2 + 4, -height/5, coreW - 8, height * 0.52, 6);
     } else {
         ctx.roundRect(-coreW/4, -3, coreW/2, height * 0.25, 2);
     }
     ctx.fill();
 
-    // خطوط جلوه شیشه جلو
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.lineWidth = 1;
+    // رفلکس براق روی شیشه جلو
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
     if(!isBike) {
-        ctx.moveTo(-coreW/2 + 6, -height/6);
-        ctx.lineTo(coreW/2 - 6, -height/6);
+        ctx.moveTo(-coreW/2 + 7, -height/7);
+        ctx.lineTo(coreW/2 - 7, -height/7);
         ctx.stroke();
     }
 
-    // چراغ‌های جلو زنون سفید
-    ctx.fillStyle = '#f8fafc';
+    // ۵. چراغ‌های جلو زنون فوق‌العاده قشنگ همراه با افکت تابش خفیف
+    ctx.save();
     if (!isBike) {
-        ctx.fillRect(-coreW/2 + 2, -height/2 + 1, 6, 3);
-        ctx.fillRect(coreW/2 - 8, -height/2 + 1, 6, 3);
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#ffffff';
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(-coreW/2 + 2, -height/2 + 1, 7, 4);
+        ctx.fillRect(coreW/2 - 9, -height/2 + 1, 7, 4);
     }
+    ctx.restore();
 
-    // چراغ‌های عقب قرمز خیره‌کننده
-    ctx.fillStyle = isPlayer ? '#ff0055' : '#f97316';
+    // ۶. چراغ‌های ترمز عقب قرمز درخشان
+    ctx.save();
     if (!isBike) {
-        ctx.fillRect(-coreW/2 + 3, height/2 - 4, 6, 3);
-        ctx.fillRect(coreW/2 - 9, height/2 - 4, 6, 3);
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#ff0055';
+        ctx.fillStyle = isPlayer ? '#ff0055' : '#ef4444';
+        ctx.fillRect(-coreW/2 + 3, height/2 - 5, 7, 4);
+        ctx.fillRect(coreW/2 - 10, height/2 - 5, 7, 4);
     }
+    ctx.restore();
 
     // متن نام خوانای مانع/بازیکن
     ctx.fillStyle = '#ffffff';
-    ctx.font = '900 8px sans-serif';
+    ctx.font = '900 8.5px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(name, 0, isBike ? -8 : 1);
@@ -632,7 +642,6 @@ function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = 
 class EnemyCar {
     constructor() {
         this.jobSpec = stageJobs[currentStageIndex];
-        // بازطراحی و ابعاد کوچک‌تر برای تمامی ۱۰ مدل موانع
         this.width = (this.jobSpec.type === 'BIG_SIZE') ? 54 : (this.jobSpec.type === 'BIKE' ? 28 : 46);
         this.height = (this.jobSpec.type === 'BIG_SIZE') ? 86 : 68;
         
@@ -806,9 +815,10 @@ function loop(currentTime) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawRoad(dt);
 
+    // محاسبه جابه‌جایی چپ و راست بر اساس زمان دلتا (dt) جهت حذف کامل هرگونه لگ و گیر کردن دکمه‌ها
     if (isPlaying && !isPaused && !isBurning) {
-        if (player.movingLeft) player.x -= 8.5;
-        if (player.movingRight) player.x += 8.5;
+        if (player.movingLeft) player.x -= player.speed * dt;
+        if (player.movingRight) player.x += player.speed * dt;
     }
 
     if (!isBurning) {
