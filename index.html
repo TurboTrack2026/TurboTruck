@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Adventure High Speed</title>
+    <title>Turbo Track - Neon Speed</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -161,6 +161,7 @@
         }
         #restartBtn { border-color: #ff2222; }
 
+        /* Neon & Static Countdown Configuration */
         #countdownOverlay {
             position: absolute;
             top: 0;
@@ -170,24 +171,18 @@
             display: none;
             align-items: center;
             justify-content: center;
-            background: rgba(5, 7, 10, 0.85);
+            background: rgba(5, 7, 10, 0.88);
             z-index: 9;
         }
         #countdownText {
-            font-size: 280px; 
+            font-size: 240px; 
             font-weight: 900;
-            color: #facc15; 
-            text-shadow: 0 0 60px rgba(250, 204, 21, 0.5), 0 4px 20px rgba(0,0,0,0.6);
-            opacity: 0;
-            transform: scale(1.7);
-            will-change: transform, opacity;
-        }
-        #countdownText.animate {
-            animation: cdScale 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes cdScale {
-            0% { transform: scale(1.7); opacity: 0; }
-            100% { transform: scale(0.95); opacity: 1; }
+            color: #00e5ff; 
+            /* Fixed Position Neon Glow System - No scaling animation to prevent jitter */
+            text-shadow: 0 0 10px #00e5ff, 0 0 20px #00e5ff, 0 0 40px #00b0ff, 0 0 80px #00b0ff;
+            opacity: 1;
+            transform: scale(1);
+            will-change: opacity;
         }
 
         #rewardToast {
@@ -198,7 +193,7 @@
             background: #facc15;
             color: #000000;
             padding: 14px 24px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 900;
             border-radius: 16px;
             box-shadow: 0 8px 30px rgba(250, 204, 21, 0.5);
@@ -207,8 +202,8 @@
             pointer-events: none;
             transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-align: center;
-            width: 88%;
-            direction: rtl;
+            width: 90%;
+            direction: ltr; /* English alignment */
         }
         #rewardToast.show {
             opacity: 1;
@@ -279,7 +274,7 @@
         <button id="pauseBtn" class="pause-btn">Pause</button>
     </div>
 
-    <div id="rewardToast">جایزه جدید!</div>
+    <div id="rewardToast">Congratulations! You won the awesome prize of this stage! 🔥</div>
     
     <div id="controls">
         <button id="btnLeft" class="btn">◀</button>
@@ -369,15 +364,14 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-// Adventure-focused Ambient Audio Architecture (Zero Rendering Jitter)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicTimer = 0;
 let musicStep = 0;
 
-// Gentle, atmospheric, rhythmic sequence that mimics an epic tracking speed journey
-const adventureMelody = [110.00, 146.83, 164.81, 146.83, 110.00, 196.00, 164.81, 0, 110.00, 146.83, 220.00, 196.00, 164.81, 146.83, 123.47, 0];
+// Fast & Furious Automotive / Cinematic Ambient Note Matrix (Aggressive yet Soft Background Line)
+const fastFuriousMelody = [73.42, 73.42, 110.00, 0, 98.00, 98.00, 146.83, 0, 87.31, 87.31, 130.81, 0, 73.42, 0, 164.81, 0];
 
-function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
+function playSoundEffect(freq, duration, vol, type = 'sawtooth', delay = 0) {
     if (isPaused || !isPlaying) return; 
     try {
         const now = audioCtx.currentTime + delay;
@@ -386,7 +380,8 @@ function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
         osc.type = type;
         osc.frequency.setValueAtTime(freq, now);
         
-        gain.gain.setValueAtTime(vol * 0.12, now); // Ultra light volume padding
+        // Exact volume level calibration matching the burn sound footprint
+        gain.gain.setValueAtTime(vol * 0.10, now); 
         gain.gain.linearRampToValueAtTime(0.0001, now + duration);
         
         osc.connect(gain);
@@ -399,38 +394,40 @@ function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
 function processInlineMusic(dt) {
     if (!isPlaying || isPaused || isBurning) return;
     musicTimer += dt;
-    // Ticks smoothly on separate rhythmic frames (280ms) for an immersive adventure crawl
-    if (musicTimer >= 0.28) {
+    if (musicTimer >= 0.25) {
         musicTimer = 0;
-        const freq = adventureMelody[musicStep % adventureMelody.length];
+        const freq = fastFuriousMelody[musicStep % fastFuriousMelody.length];
         musicStep++;
         if (freq > 0) {
-            playSoundEffect(freq, 0.25, 0.25, 'sine'); 
+            // Uses a stylized sawtooth wave paired down to sound like a distant high-rev racing drone
+            playSoundEffect(freq, 0.22, 0.18, 'sawtooth'); 
         }
     }
 }
 
-function playClickSound() { playSoundEffect(600, 0.02, 0.08, 'sine'); }
+function playClickSound() { playSoundEffect(500, 0.02, 0.08, 'sine'); }
 
 function playMarioDeathSound() {
-    const mNotes = [261.63, 220.00, 196.00, 146.83];
+    // Calibrated exactly matching the new background theme volume
+    const mNotes = [220.00, 196.00, 146.83, 110.00];
     mNotes.forEach((freq, idx) => {
-        playSoundEffect(freq, 0.15, 0.25, 'sine', idx * 0.07);
+        playSoundEffect(freq, 0.16, 0.18, 'triangle', idx * 0.08);
     });
 }
 
-function playBeep() { playSoundEffect(523.25, 0.07, 0.15, 'sine'); }
+function playBeep() { playSoundEffect(587.33, 0.08, 0.12, 'sine'); }
 
 function playRewardSound() {
-    [293.66, 349.23, 440.00, 587.33].forEach((f, i) => {
+    [349.23, 440.00, 523.25, 698.46].forEach((f, i) => {
         playSoundEffect(f, 0.12, 0.15, 'sine', i * 0.05);
     });
 }
 
+// Prizes config containing dynamic variables (Color, Jobs, Name Changes) fully split from speed
 const stageJobs = [
     { key: 'taxi', name: 'TAXI', color: '#facc15', type: 'STANDARD' },
     { key: 'police', name: 'POLICE', color: '#1e293b', type: 'SPEED_OBSTACLE' }, 
-    { key: 'ambulance', name: 'AMBU', color: '#f8fafc', type: 'NEW_COLOR' },     
+    { key: 'ambulance', name: 'AMBU', color: '#c084fc', type: 'NEW_COLOR' },     
     { key: 'truck', name: 'TRUCK', color: '#0284c7', type: 'BIG_SIZE' },       
     { key: 'fire', name: 'FIRE', color: '#dc2626', type: 'CHAOS' }             
 ];
@@ -486,9 +483,7 @@ function generateVehicleGraphicsCache(key, color, name, isPlayer = false) {
 function buildAllGraphicsCaches() {
     generateVehicleGraphicsCache('player', '#00e5ff', 'YOU', true);
     stageJobs.forEach((job, idx) => {
-        let col = job.color;
-        if (idx === 2) col = '#c084fc'; 
-        generateVehicleGraphicsCache(job.key + '_' + idx, col, job.name, false);
+        generateVehicleGraphicsCache(job.key + '_' + idx, job.color, job.name, false);
     });
 }
 buildAllGraphicsCaches();
@@ -508,9 +503,9 @@ let sceneryItems = [];
 let lastSpawnLane = -1; 
 let animationFrameId = null; 
 
-// Dynamic Global Speed Modifiers based on current Stage index
-let baseRoadSpeed = 550; 
-let playerSpeed = 580;
+let baseRoadSpeed = 560; 
+let playerSpeed = 590;
+let realGameStageLevel = 0; // Pure level counter tracking independent game acceleration
 
 const player = {
     x: 250, y: 520, 
@@ -521,20 +516,23 @@ const player = {
 function updateScoreUI() {
     sbPass.innerText = `PASS: ${passedCarsCount}/10`;
     sbScore.innerText = `SCORE: ${score}`;
-    sbStage.innerText = `STAGE: ${currentStageIndex + 1}`;
+    sbStage.innerText = `STAGE: ${realGameStageLevel + 1}`;
 }
 
 function checkStageProgression() {
     passedCarsCount++;
     if (passedCarsCount >= 10) {
         passedCarsCount = 0;
+        
+        // Dynamic Variable Rewards Cycle (Jobs, Colors, Roles shifts automatically)
         currentStageIndex = (currentStageIndex < stageJobs.length - 1) ? currentStageIndex + 1 : 0;
         
-        // Progressively scale game environment speed exponentially per stage
-        baseRoadSpeed = 550 + (currentStageIndex * 135);
-        playerSpeed = 580 + (currentStageIndex * 70);
+        // Acceleration engine increments fully separated from prizes setup
+        realGameStageLevel++;
+        baseRoadSpeed = 560 + (realGameStageLevel * 140);
+        playerSpeed = 590 + (realGameStageLevel * 75);
         
-        showRewardNotification("مرحله جدید! سرعت جاده بیشتر شد! 🚀");
+        showRewardNotification("Congratulations! You won the awesome prize of this stage! 🔥");
     }
     updateScoreUI();
 }
@@ -548,9 +546,10 @@ function showRewardNotification(text) {
 
 function initScenery() {
     sceneryItems = [];
-    for (let y = -100; y < canvas.height + 100; y += 120) {
+    // Tree generation density frequency cut down by half (Y delta moved from 120 to 245)
+    for (let y = -100; y < canvas.height + 100; y += 245) {
         sceneryItems.push({ x: canvas.width * 0.035, y: y });
-        sceneryItems.push({ x: canvas.width * 0.945, y: y + 60 });
+        sceneryItems.push({ x: canvas.width * 0.945, y: y + 110 });
     }
 }
 
@@ -625,8 +624,7 @@ class EnemyCar {
         this.x = lanes[targetLaneIndex];
         this.y = -130;
         
-        // Enemy speed scales matching the road speed boost matrix
-        this.speed = baseRoadSpeed - 50 + (Math.random() * 60); 
+        this.speed = baseRoadSpeed - 55 + (Math.random() * 60); 
         this.passed = false;
         this.cacheKey = this.jobSpec.key + '_' + currentStageIndex;
     }
@@ -643,7 +641,7 @@ function handleEnemies(dt) {
     if (!isPaused && !isBurning) enemySpawnTimer += dt;
     
     let currentType = stageJobs[currentStageIndex].type;
-    let baseInterval = (currentType === 'SPEED_OBSTACLE' || currentType === 'CHAOS') ? 0.42 : 0.80 - (currentStageIndex * 0.09);
+    let baseInterval = (currentType === 'SPEED_OBSTACLE' || currentType === 'CHAOS') ? 0.42 : 0.80 - (realGameStageLevel * 0.09);
     const spawnInterval = Math.max(0.28, baseInterval);
     
     if (enemySpawnTimer > spawnInterval && !isPaused && !isBurning) {
@@ -736,15 +734,8 @@ function startCountdown() {
 
     function nextTick() {
         if (current < states.length) {
-            countdownText.classList.remove('animate');
+            // Completely static, no layout-thrashing class updates
             countdownText.innerText = states[current];
-            
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    countdownText.classList.add('animate');
-                });
-            });
-
             current++;
             setTimeout(nextTick, 850);
         } else {
@@ -782,8 +773,9 @@ function gameOver() {
 function resetGame() {
     if (audioCtx.state === 'suspended') { audioCtx.resume(); }
     score = 0; currentStageIndex = 0; passedCarsCount = 0; lastSpawnLane = -1;
-    baseRoadSpeed = 550;
-    playerSpeed = 580;
+    realGameStageLevel = 0;
+    baseRoadSpeed = 560;
+    playerSpeed = 590;
     isBurning = false;
     player.movingLeft = false;
     player.movingRight = false;
@@ -832,7 +824,6 @@ function loop(currentTime) {
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
 
-// Non-blocking isolated control pipelines 
 btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; player.movingRight = false; playClickSound(); } });
 btnLeft.addEventListener('mouseup', () => player.movingLeft = false);
 btnLeft.addEventListener('mouseleave', () => player.movingLeft = false);
