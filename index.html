@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Neon Blue Mario Edition</title>
+    <title>Turbo Track - Snappy Cyber Smooth</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -49,7 +49,6 @@
             z-index: 6;
             pointer-events: none;
         }
-        /* Neon Blue Scoreboard with GPU-friendly shadow drop */
         #scoreBoard {
             color: #ffffff;
             font-size: 11px; 
@@ -132,7 +131,6 @@
         }
         
         #welcomeScreen { background: #07090e; display: none; }
-        /* Neon Blue Welcome Title */
         .welcome-title {
             color: #00d2ff;
             font-size: 38px;
@@ -178,13 +176,11 @@
             z-index: 9;
         }
         #countdownText {
-            font-size: 240px; 
+            font-size: 250px; 
             font-weight: 900;
             color: #ffdf00; 
-            filter: drop-shadow(0 0 12px #d4af37) drop-shadow(0 0 35px #aa7c11);
-            opacity: 1;
-            transform: scale(1);
-            will-change: filter, opacity;
+            filter: drop-shadow(0 0 15px #d4af37) drop-shadow(0 0 40px #aa7c11);
+            will-change: transform, opacity;
         }
 
         #rewardToast {
@@ -370,17 +366,15 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicTimer = 0;
 let musicStep = 0;
 
-// High-Performance Super Mario Overworld Theme Chords (Extremely light synthesized memory footprint)
-const marioThemeMelody = [
-    659.25, 659.25, 0, 659.25, 0, 523.25, 659.25, 0,
-    783.99, 0, 0, 0, 392.00, 0, 0, 0,
-    523.25, 0, 0, 392.00, 0, 0, 329.63, 0,
-    0, 440.00, 0, 493.88, 0, 466.16, 440.00, 0,
-    392.00, 659.25, 783.99, 880.00, 0, 698.46, 783.99,
-    0, 659.25, 0, 523.25, 587.33, 493.88, 0, 0
+// High-Performance Cyber Driving Beats (Low-CPU, Matches the crash sequence frequency flawlessly)
+const ultraLightCyberMelody = [
+    140, 140, 0, 180, 140, 0, 220, 0,
+    140, 140, 0, 180, 140, 0, 260, 0,
+    110, 110, 0, 150, 110, 0, 190, 0,
+    165, 165, 0, 220, 165, 0, 330, 0
 ];
 
-function playSoundEffect(freq, duration, vol, type = 'square', delay = 0) {
+function playSoundEffect(freq, duration, vol, type = 'triangle', delay = 0) {
     if (isPaused || !isPlaying) return; 
     try {
         const now = audioCtx.currentTime + delay;
@@ -389,8 +383,7 @@ function playSoundEffect(freq, duration, vol, type = 'square', delay = 0) {
         osc.type = type;
         osc.frequency.setValueAtTime(freq, now);
         
-        // Lowered sound footprint volume slightly as per request
-        gain.gain.setValueAtTime(vol * 0.18, now); 
+        gain.gain.setValueAtTime(vol * 0.22, now); 
         gain.gain.linearRampToValueAtTime(0.0001, now + duration);
         
         osc.connect(gain);
@@ -403,40 +396,36 @@ function playSoundEffect(freq, duration, vol, type = 'square', delay = 0) {
 function processInlineMusic(dt) {
     if (!isPlaying || isPaused || isBurning) return;
     musicTimer += dt;
-    // Paced perfectly to match original tempo smoothly
-    if (musicTimer >= 0.15) {
+    if (musicTimer >= 0.13) {
         musicTimer = 0;
-        const freq = marioThemeMelody[musicStep % marioThemeMelody.length];
+        const freq = ultraLightCyberMelody[musicStep % ultraLightCyberMelody.length];
         musicStep++;
         if (freq > 0) {
-            playSoundEffect(freq, 0.11, 0.18, 'square'); 
+            playSoundEffect(freq, 0.09, 0.20, 'triangle'); 
         }
     }
 }
 
-function playClickSound() { playSoundEffect(500, 0.02, 0.10, 'sine'); }
+function playClickSound() { playSoundEffect(600, 0.02, 0.10, 'sine'); }
 
-function playMarioDeathSound() {
-    const marioDeathSequence = [
-        {f: 493.88, d: 0.10}, 
-        {f: 659.25, d: 0.10}, 
-        {f: 587.33, d: 0.10}, 
-        {f: 523.25, d: 0.10}, 
-        {f: 493.88, d: 0.12}, 
-        {f: 392.00, d: 0.12}, 
-        {f: 329.63, d: 0.15}, 
-        {f: 261.63, d: 0.25}  
+// Cyber Crash Sequence - Perfectly complements the new racing music track
+function playCyberBurnSound() {
+    const crashSequence = [
+        {f: 220, d: 0.12, t: 'sawtooth'},
+        {f: 150, d: 0.15, t: 'sawtooth'},
+        {f: 90, d: 0.20, t: 'triangle'},
+        {f: 50, d: 0.35, t: 'triangle'}
     ];
-    marioDeathSequence.forEach((note, idx) => {
-        playSoundEffect(note.f, note.d, 0.22, 'triangle', idx * 0.08);
+    crashSequence.forEach((note, idx) => {
+        playSoundEffect(note.f, note.d, 0.35, note.t, idx * 0.07);
     });
 }
 
-function playBeep() { playSoundEffect(587.33, 0.08, 0.15, 'sine'); }
+function playBeep() { playSoundEffect(700, 0.08, 0.15, 'sine'); }
 
 function playRewardSound() {
-    [349.23, 440.00, 523.25, 698.46].forEach((f, i) => {
-        playSoundEffect(f, 0.12, 0.15, 'sine', i * 0.05);
+    [440, 554, 659, 880].forEach((f, i) => {
+        playSoundEffect(f, 0.10, 0.15, 'sine', i * 0.04);
     });
 }
 
@@ -548,14 +537,14 @@ function showRewardNotification(text) {
 
 function initScenery() {
     sceneryItems = [];
-    const colors = ['#ef4444', '#ec4899', '#eab308']; // Vivid Red, Pink, Yellow Flowers
+    const colors = ['#ef4444', '#ec4899', '#eab308']; 
     for (let y = -100; y < canvas.height + 100; y += 190) {
         sceneryItems.push({ x: canvas.width * 0.04, y: y, color: colors[Math.floor(Math.random() * 3)] });
         sceneryItems.push({ x: canvas.width * 0.96, y: y + 95, color: colors[Math.floor(Math.random() * 3)] });
     }
 }
 
-// Renders lightweight multi-colored luxury flowers alongside track borders
+// Highly Optimized Linear Rendering for flower scenery elements
 function updateAndDrawScenery(speed, dt) {
     ctx.fillStyle = '#1b3323';
     ctx.fillRect(0, 0, canvas.width * 0.08, canvas.height);
@@ -567,14 +556,12 @@ function updateAndDrawScenery(speed, dt) {
         if (isPlaying && !isPaused && !isBurning) item.y += speed * dt;
         if (item.y > canvas.height + 25) item.y = -25;
 
-        // Petals layout vector cache simulation
         ctx.fillStyle = item.color;
         ctx.beginPath(); ctx.arc(item.x - 4, item.y, 5, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(item.x + 4, item.y, 5, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(item.x, item.y - 4, 5, 0, Math.PI * 2); ctx.fill();
         ctx.beginPath(); ctx.arc(item.x, item.y + 4, 5, 0, Math.PI * 2); ctx.fill();
         
-        // Flower center core
         ctx.fillStyle = '#ffffff';
         ctx.beginPath(); ctx.arc(item.x, item.y, 3, 0, Math.PI * 2); ctx.fill();
     }
@@ -681,7 +668,7 @@ function handleEnemies(dt) {
     }
 }
 
-// Ultra sensitive hitbox module - instantly crashes upon micro-friction
+// Ultra sensitive collision matrix
 function intersects(x1, y1, w1, h1, x2, y2, w2, h2) {
     return x1 - w1/2.02 < x2 + w2/2.02 && x1 + w1/2.02 > x2 - w2/2.02 && y1 - h1/2.02 < y2 + h2/2.02 && y1 + h1/2.02 > y2 - h2/2.02;
 }
@@ -690,7 +677,7 @@ function triggerCarBurnEffect() {
     isBurning = true;
     player.movingLeft = false;
     player.movingRight = false;
-    playMarioDeathSound();
+    playCyberBurnSound();
     
     let burnCounter = 0;
     const burnInterval = setInterval(() => {
@@ -718,7 +705,6 @@ function drawRoad(dt) {
     ctx.fillRect(leftLimit, 0, 6, canvas.height);
     ctx.fillRect(rightLimit, 0, 6, canvas.height);
 
-    // Ultra sensitive wall touch control
     if (isPlaying && !isPaused && !isBurning) {
         if (player.x - player.width / 1.95 <= leftLimit + 6 || player.x + player.width / 1.95 >= rightLimit) {
             triggerCarBurnEffect();
@@ -737,6 +723,7 @@ function drawRoad(dt) {
     }
 }
 
+// Snappy Instant Countdown Timer System (700ms interval for an elegant, snappy feel)
 function startCountdown() {
     welcomeScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
@@ -750,8 +737,7 @@ function startCountdown() {
         if (current < states.length) {
             countdownText.innerText = states[current];
             current++;
-            // Increased smoothly to 1600ms for a completely non-abrupt premium soft cadence
-            setTimeout(nextTick, 1600);
+            setTimeout(nextTick, 700); 
         } else {
             countdownOverlay.style.display = 'none';
             playBeep();
@@ -874,4 +860,3 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
-
