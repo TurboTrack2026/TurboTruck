@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Dynamic Speed</title>
+    <title>Turbo Track - Fixed Player</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -313,7 +313,7 @@
 <script>
 // --- لیست سفید کاربران مجاز (آیدی‌های عددی یا یوزرنیم‌ها را اینجا بنویس) ---
 const ALLOWED_USERS = [
-    2049044424,         // آیدی عددی خودت یا کاربرانت را اینجا قرار بده
+    123456789,         // آیدی عددی خودت یا کاربرانت را اینجا قرار بده
     "your_username"    // یوزرنیم بدون @ داخل کوتیشن
 ];
 
@@ -325,10 +325,8 @@ function verifyTelegramAccess() {
     const authErrorScreen = document.getElementById('authErrorScreen');
     const welcomeScreen = document.getElementById('welcomeScreen');
 
-    // چک کردن اطلاعات کاربر فرستاده شده از تلگرام
     const user = tg.initDataUnsafe?.user;
 
-    // جهت تست اولیه خارج از تلگرام در مرورگرهای معمولی
     if (!tg.initData || !user) {
         authErrorScreen.style.display = 'none';
         welcomeScreen.style.display = 'flex';
@@ -338,7 +336,6 @@ function verifyTelegramAccess() {
     const currentUserId = user.id ? Number(user.id) : null;
     const currentUsername = user.username ? user.username.toLowerCase().trim() : "";
 
-    // منطق اصلی بررسی وجود آیدی در لیست سفید
     const isAllowed = ALLOWED_USERS.some(allowed => {
         if (typeof allowed === 'number' && currentUserId !== null) {
             return allowed === currentUserId;
@@ -350,7 +347,6 @@ function verifyTelegramAccess() {
         return false;
     });
 
-    // قفل یا باز کردن دقیق صفحه
     if (isAllowed) {
         authErrorScreen.style.display = 'none';
         welcomeScreen.style.display = 'flex';
@@ -360,7 +356,6 @@ function verifyTelegramAccess() {
     }
 }
 
-// اجرای آنی احراز هویت بلافاصله پس از لود صفحه
 verifyTelegramAccess();
 
 const canvas = document.getElementById('gameCanvas');
@@ -385,6 +380,16 @@ function resizeCanvas() {
     canvas.height = canvas.parentElement.clientHeight;
 }
 resizeCanvas();
+
+// --- تعریف شیء ماشین بازیکن (YOU) با مختصات فیکس شده ---
+const player = {
+    x: canvas.width / 2,
+    y: 500,
+    width: 58,
+    height: 84,
+    movingLeft: false,
+    movingRight: false
+};
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicInterval = null;
@@ -538,7 +543,6 @@ let particles = [];
 let sceneryItems = [];
 let lastSpawnLane = -1; 
 
-// سرعت اصلی و میزان سختی گام‌به‌گام بازی در منطق جاده
 let currentRoadSpeed = 540; 
 let speedMultiplierPerStage = 160; 
 
@@ -554,10 +558,8 @@ function checkStageProgression() {
         passedCarsCount = 0;
         currentStageIndex = (currentStageIndex < stageJobs.length - 1) ? currentStageIndex + 1 : 0;
         
-        // شتاب و افزایش سرعت خالص در هسته منطق بازی
         currentRoadSpeed = 540 + (currentStageIndex * speedMultiplierPerStage);
         
-        // اجرای مستقل سیستم تبریک جایزه بدون اختلال در سرعت
         showRewardNotification("تبریک! شما جایزه ی خفن این مرحله رو بردید!");
     }
     updateScoreUI();
@@ -865,4 +867,3 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
-
