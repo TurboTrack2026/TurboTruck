@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Ultra Smooth & Chill</title>
+    <title>Turbo Track - Pure Smooth Performance</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -113,6 +113,7 @@
             justify-content: center;
             pointer-events: auto;
             touch-action: none;
+            will-change: transform, opacity;
         }
 
         .screen-overlay {
@@ -179,9 +180,10 @@
             text-shadow: 0 0 60px rgba(250, 204, 21, 0.5), 0 4px 20px rgba(0,0,0,0.6);
             opacity: 0;
             transform: scale(1.7);
+            will-change: transform, opacity;
         }
         #countdownText.animate {
-            animation: cdScale 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: cdScale 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         @keyframes cdScale {
             0% { transform: scale(1.7); opacity: 0; }
@@ -367,12 +369,10 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-// Ultra-lightweight Audio Context Architecture
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicTimer = 0;
 let musicStep = 0;
 
-// New ultra-smooth, chill & gentle ambient melody progression (Zero CPU overhead)
 const softMelody = [164.81, 0, 196.00, 0, 220.00, 0, 196.00, 0, 164.81, 164.81, 0, 220.00, 0, 246.94, 0, 0];
 
 function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
@@ -384,7 +384,7 @@ function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
         osc.type = type;
         osc.frequency.setValueAtTime(freq, now);
         
-        gain.gain.setValueAtTime(vol * 0.25, now); // Lowered volume to make it super gentle
+        gain.gain.setValueAtTime(vol * 0.25, now); 
         gain.gain.linearRampToValueAtTime(0.0001, now + duration);
         
         osc.connect(gain);
@@ -397,13 +397,12 @@ function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
 function processInlineMusic(dt) {
     if (!isPlaying || isPaused || isBurning) return;
     musicTimer += dt;
-    // Ticks smoothly every 240ms inside the main loop (No CPU interval blocking)
     if (musicTimer >= 0.24) {
         musicTimer = 0;
         const freq = softMelody[musicStep % softMelody.length];
         musicStep++;
         if (freq > 0) {
-            playSoundEffect(freq, 0.22, 0.35, 'sine'); // Pure soft sine wave instead of harsh triangle
+            playSoundEffect(freq, 0.22, 0.35, 'sine'); 
         }
     }
 }
@@ -668,6 +667,8 @@ function intersects(x1, y1, w1, h1, x2, y2, w2, h2) {
 
 function triggerCarBurnEffect() {
     isBurning = true;
+    player.movingLeft = false;
+    player.movingRight = false;
     playMarioDeathSound();
     
     let burnCounter = 0;
@@ -722,11 +723,19 @@ function startCountdown() {
     let states = ['3', '2', '1'];
     let current = 0;
 
+    // Fully standardized animation cycles for all numbers to prevent glitches
     function nextTick() {
         if (current < states.length) {
-            countdownText.innerText = states[current];
             countdownText.classList.remove('animate');
-            setTimeout(() => { countdownText.classList.add('animate'); }, 10);
+            countdownText.innerText = states[current];
+            
+            // Clean DOM sync step before triggering animation
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    countdownText.classList.add('animate');
+                });
+            });
+
             current++;
             setTimeout(nextTick, 850);
         } else {
@@ -765,6 +774,8 @@ function resetGame() {
     if (audioCtx.state === 'suspended') { audioCtx.resume(); }
     score = 0; currentStageIndex = 0; passedCarsCount = 0; lastSpawnLane = -1;
     isBurning = false;
+    player.movingLeft = false;
+    player.movingRight = false;
     updateScoreUI();
     
     resizeCanvas();
@@ -781,12 +792,12 @@ function loop(currentTime) {
     if (dt > 0.05) dt = 0.016; 
     lastTime = currentTime;
 
-    // Process ambient music smoothly inline without freezing the browser thread
     processInlineMusic(dt);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawRoad(dt);
 
+    // State-based absolute smooth movement decoupled from event listeners
     if (isPlaying && !isPaused && !isBurning) {
         if (player.movingLeft) player.x -= player.speed * dt;
         if (player.movingRight) player.x += player.speed * dt;
@@ -811,24 +822,25 @@ function loop(currentTime) {
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
 
-btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; playClickSound(); } });
+// Performance Optimizations on Controls (Prevents thread-blocking ticks)
+btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; player.movingRight = false; playClickSound(); } });
 btnLeft.addEventListener('mouseup', () => player.movingLeft = false);
 btnLeft.addEventListener('mouseleave', () => player.movingLeft = false);
 btnLeft.addEventListener('touchstart', (e) => { 
     if (e.cancelable) e.preventDefault(); 
-    if(!isPaused && !isBurning) { player.movingLeft = true; playClickSound(); } 
+    if(!isPaused && !isBurning) { player.movingLeft = true; player.movingRight = false; playClickSound(); } 
 }, { passive: false });
 btnLeft.addEventListener('touchend', (e) => {
     if (e.cancelable) e.preventDefault();
     player.movingLeft = false;
 }, { passive: false });
 
-btnRight.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingRight = true; playClickSound(); } });
+btnRight.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingRight = true; player.movingLeft = false; playClickSound(); } });
 btnRight.addEventListener('mouseup', () => player.movingRight = false);
 btnRight.addEventListener('mouseleave', () => player.movingRight = false);
 btnRight.addEventListener('touchstart', (e) => { 
     if (e.cancelable) e.preventDefault(); 
-    if(!isPaused && !isBurning) { player.movingRight = true; playClickSound(); } 
+    if(!isPaused && !isBurning) { player.movingRight = true; player.movingLeft = false; playClickSound(); } 
 }, { passive: false });
 btnRight.addEventListener('touchend', (e) => {
     if (e.cancelable) e.preventDefault();
