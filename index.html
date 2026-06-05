@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Smooth Edition</title>
+    <title>Turbo Track - Super Smooth Edition</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -310,8 +310,9 @@
 </div>
 
 <script>
+// --- لیست سفید کاربران مجاز (آیدی‌های عددی یا یوزرنیم‌ها را اینجا بنویس) ---
 const ALLOWED_USERS = [
-    2049044424,         
+    123456789,         
     "your_username"    
 ];
 
@@ -357,7 +358,6 @@ verifyTelegramAccess();
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-ctx.imageSmoothingEnabled = true;
 
 const welcomeScreen = document.getElementById('welcomeScreen');
 const gameOverScreen = document.getElementById('gameOverScreen');
@@ -378,7 +378,7 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
-// --- تعریف و فیکس ساختار شیء ماشین بازیکن ---
+// تنظیم دقیق مختصات ماشین بازیکن بر اساس درخواست شما در Y: 500
 const player = {
     x: canvas.width / 2,
     y: 500,
@@ -442,6 +442,7 @@ function playRewardSound() {
     });
 }
 
+// دیتابیس اختصاصی ویژگی موانع مراحل بازی برای زیباسازی کامل ظاهر هر خودرو
 const stageJobs = [
     { key: 'ambulance', name: 'AMBU', type: 'STANDARD', color: '#d32f2f' },
     { key: 'taxi', name: 'TAXI', type: 'STANDARD', color: '#fbc02d' },
@@ -454,77 +455,6 @@ const stageJobs = [
     { key: 'garbage', name: 'GARB', type: 'BIG_SIZE', color: '#4caf50' },             
     { key: 'fire', name: 'FIRE', type: 'CHAOS', color: '#ff1111' }             
 ];
-
-const vehicleCacheCanvases = {};
-
-function drawVehicleToContext(c, color, name, type, isPlayer = false) {
-    const w = 90, h = 130;
-    c.clearRect(0, 0, w, h);
-    
-    c.fillStyle = 'rgba(0,0,0,0.4)';
-    c.beginPath(); c.roundRect(6, 12, 78, 114, 22); c.fill();
-
-    const isBike = (type === 'BIKE');
-    const carWidth = isBike ? 34 : 64;
-
-    c.fillStyle = '#64748b';
-    if (!isBike) {
-        c.fillRect(45 - carWidth/2 - 5, 20, 10, 22); c.fillRect(45 + carWidth/2 - 5, 20, 10, 22);
-        c.fillRect(45 - carWidth/2 - 5, 92, 10, 22); c.fillRect(45 + carWidth/2 - 5, 92, 10, 22);
-    } else {
-        c.fillRect(40, 14, 10, 26); c.fillRect(40, 90, 10, 26);
-    }
-
-    c.fillStyle = color;
-    c.beginPath();
-    if (!isBike) {
-        c.moveTo(45 - carWidth/2, 35); c.bezierCurveTo(45 - carWidth/2, 16, 24, 6, 45, 6); c.bezierCurveTo(66, 6, 45 + carWidth/2, 16, 45 + carWidth/2, 35);
-        c.lineTo(45 + carWidth/2, 96); c.bezierCurveTo(45 + carWidth/2, 112, 70, 122, 45, 122); c.bezierCurveTo(20, 122, 45 - carWidth/2, 112, 45 - carWidth/2, 96);
-    } else {
-        c.roundRect(45 - carWidth/2, 25, carWidth, 75, 12);
-    }
-    c.closePath(); c.fill();
-    c.lineWidth = 2; c.strokeStyle = '#090d16'; c.stroke();
-
-    c.fillStyle = 'rgba(15,23,42,0.88)';
-    c.beginPath();
-    if (!isBike) {
-        c.moveTo(20, 44); c.bezierCurveTo(22, 34, 30, 30, 45, 30); c.bezierCurveTo(60, 30, 68, 34, 70, 44);
-        c.lineTo(72, 74); c.bezierCurveTo(72, 84, 66, 88, 45, 88); c.bezierCurveTo(24, 88, 18, 84, 18, 74);
-    } else {
-        c.roundRect(45 - carWidth/4, 45, carWidth/2, 25, 4);
-    }
-    c.closePath(); c.fill();
-
-    c.fillStyle = '#ffffff'; 
-    if (!isBike) {
-        c.fillRect(14, 12, 12, 5); c.fillRect(64, 12, 12, 5);
-    }
-    
-    c.fillStyle = isPlayer ? '#ff1111' : '#ff4400';
-    if (!isBike) {
-        c.fillRect(16, 116, 16, 4); c.fillRect(58, 116, 16, 4);
-    }
-
-    c.fillStyle = '#ffffff'; c.font = '900 9px sans-serif'; c.textAlign = 'center';
-    c.fillText(name, 45, 64);
-}
-
-function buildStaticCaches() {
-    const cacheCanvas = document.createElement('canvas');
-    cacheCanvas.width = 90; cacheCanvas.height = 130;
-    const c = cacheCanvas.getContext('2d');
-    drawVehicleToContext(c, '#00e5ff', 'YOU', 'STANDARD', true);
-    vehicleCacheCanvases['player'] = cacheCanvas;
-    
-    stageJobs.forEach((job, idx) => {
-        const enemyCanvas = document.createElement('canvas');
-        enemyCanvas.width = 90; enemyCanvas.height = 130;
-        drawVehicleToContext(enemyCanvas.getContext('2d'), job.color, job.name, job.type, false);
-        vehicleCacheCanvases['stage_' + idx] = enemyCanvas;
-    });
-}
-buildStaticCaches();
 
 let score = 0;
 let currentStageIndex = 0; 
@@ -612,7 +542,6 @@ class ExplodeParticle {
         this.x += this.vx * dt; 
         this.y += this.vy * dt; 
         this.alpha -= this.decay * dt; 
-        if (this.isFire && this.radius > 0.4) this.radius -= 1.5 * dt; 
     }
     draw() {
         if (this.alpha <= 0) return;
@@ -624,6 +553,75 @@ class ExplodeParticle {
         ctx.fill(); 
         ctx.restore();
     }
+}
+
+// تابع رندرکننده مستقیم بدنه ماشین‌ها با گرافیک غنی، سایه‌ها، شیشه‌ها و تایرها برای زیبایی موانع
+function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = false) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    // سایه زیر خودرو
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.roundRect(-width/2 + 4, -height/2 + 6, width, height, 14);
+    ctx.fill();
+
+    const isBike = (type === 'BIKE');
+    const coreW = isBike ? width * 0.6 : width * 0.9;
+
+    // تایرها
+    ctx.fillStyle = '#1e293b';
+    if (!isBike) {
+        ctx.fillRect(-width/2 - 2, -height/2 + 12, 5, 16);
+        ctx.fillRect(width/2 - 3, -height/2 + 12, 5, 16);
+        ctx.fillRect(-width/2 - 2, height/2 - 28, 5, 16);
+        ctx.fillRect(width/2 - 3, height/2 - 28, 5, 16);
+    } else {
+        ctx.fillRect(-3, -height/2 + 6, 6, 18);
+        ctx.fillRect(-3, height/2 - 24, 6, 18);
+    }
+
+    // بدنه اصلی خودرو
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(-coreW/2, -height/2, coreW, height, isBike ? 10 : 16);
+    ctx.fill();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#020617';
+    ctx.stroke();
+
+    // کابین / شیشه‌ها
+    ctx.fillStyle = 'rgba(15,23,42,0.85)';
+    ctx.beginPath();
+    if (!isBike) {
+        ctx.roundRect(-coreW/2 + 5, -height/4, coreW - 10, height * 0.55, 6);
+    } else {
+        ctx.roundRect(-coreW/4, -4, coreW/2, height * 0.3, 3);
+    }
+    ctx.fill();
+
+    // چراغ‌های جلو
+    ctx.fillStyle = '#ffffff';
+    if (!isBike) {
+        ctx.fillRect(-coreW/2 + 3, -height/2 + 2, 8, 4);
+        ctx.fillRect(coreW/2 - 11, -height/2 + 2, 8, 4);
+    }
+
+    // چراغ‌های عقب
+    ctx.fillStyle = isPlayer ? '#ff2222' : '#ea580c';
+    if (!isBike) {
+        ctx.fillRect(-coreW/2 + 4, height/2 - 5, 8, 4);
+        ctx.fillRect(coreW/2 - 12, height/2 - 5, 8, 4);
+    }
+
+    // متن نام خودرو
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(name, 0, isBike ? -12 : 2);
+
+    ctx.restore();
 }
 
 class EnemyCar {
@@ -643,11 +641,10 @@ class EnemyCar {
         this.y = -130;
         this.speed = currentRoadSpeed; 
         this.passed = false;
-        this.cachedCanvas = vehicleCacheCanvases['stage_' + currentStageIndex];
     }
     update(dt) { this.y += this.speed * dt; }
     draw() {
-        ctx.drawImage(this.cachedCanvas, this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+        drawRealtimeVehicle(this.x, this.y, this.width, this.height, this.jobSpec.color, this.jobSpec.name, this.jobSpec.type, false);
     }
 }
 
@@ -787,7 +784,7 @@ function resetGame() {
     updateScoreUI();
     
     resizeCanvas();
-    player.x = canvas.width / 2; player.y = 500; 
+    player.x = canvas.width / 2; player.y = 500; // قفل در مختصات تعیین شده
     enemies = []; particles = []; enemySpawnTimer = -0.1;
     initScenery();
     startCountdown();
@@ -796,8 +793,9 @@ function resetGame() {
 function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
-    // روان‌سازی فریم‌ها با محدود کردن بیشینه‌ی زمان دلتا لقمه‌ای
-    let dt = Math.min((currentTime - lastTime) / 1000, 0.1);
+    // فیکس و نوسان‌گیری نرخ زمان (Delta Time) جهت رفع کامل هرگونه لگ و گیر
+    let dt = (currentTime - lastTime) / 1000;
+    if (dt > 0.1) dt = 0.1; 
     lastTime = currentTime;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -809,10 +807,7 @@ function loop(currentTime) {
     }
 
     if (!isBurning) {
-        const pCache = vehicleCacheCanvases['player'];
-        if (pCache) {
-            ctx.drawImage(pCache, player.x - player.width/2, player.y - player.height/2, player.width, player.height);
-        }
+        drawRealtimeVehicle(player.x, player.y, player.width, player.height, '#00e5ff', 'YOU', 'STANDARD', true);
     }
 
     for (let i = particles.length - 1; i >= 0; i--) {
