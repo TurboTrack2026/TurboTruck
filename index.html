@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Pure Smooth Performance</title>
+    <title>Turbo Track - Adventure High Speed</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -113,7 +113,7 @@
             justify-content: center;
             pointer-events: auto;
             touch-action: none;
-            will-change: transform, opacity;
+            will-change: transform;
         }
 
         .screen-overlay {
@@ -369,11 +369,13 @@ function resizeCanvas() {
 }
 resizeCanvas();
 
+// Adventure-focused Ambient Audio Architecture (Zero Rendering Jitter)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let musicTimer = 0;
 let musicStep = 0;
 
-const softMelody = [164.81, 0, 196.00, 0, 220.00, 0, 196.00, 0, 164.81, 164.81, 0, 220.00, 0, 246.94, 0, 0];
+// Gentle, atmospheric, rhythmic sequence that mimics an epic tracking speed journey
+const adventureMelody = [110.00, 146.83, 164.81, 146.83, 110.00, 196.00, 164.81, 0, 110.00, 146.83, 220.00, 196.00, 164.81, 146.83, 123.47, 0];
 
 function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
     if (isPaused || !isPlaying) return; 
@@ -384,7 +386,7 @@ function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
         osc.type = type;
         osc.frequency.setValueAtTime(freq, now);
         
-        gain.gain.setValueAtTime(vol * 0.25, now); 
+        gain.gain.setValueAtTime(vol * 0.12, now); // Ultra light volume padding
         gain.gain.linearRampToValueAtTime(0.0001, now + duration);
         
         osc.connect(gain);
@@ -397,31 +399,31 @@ function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
 function processInlineMusic(dt) {
     if (!isPlaying || isPaused || isBurning) return;
     musicTimer += dt;
-    if (musicTimer >= 0.24) {
+    // Ticks smoothly on separate rhythmic frames (280ms) for an immersive adventure crawl
+    if (musicTimer >= 0.28) {
         musicTimer = 0;
-        const freq = softMelody[musicStep % softMelody.length];
+        const freq = adventureMelody[musicStep % adventureMelody.length];
         musicStep++;
         if (freq > 0) {
-            playSoundEffect(freq, 0.22, 0.35, 'sine'); 
+            playSoundEffect(freq, 0.25, 0.25, 'sine'); 
         }
     }
 }
 
-function playClickSound() { playSoundEffect(700, 0.02, 0.1, 'sine'); }
+function playClickSound() { playSoundEffect(600, 0.02, 0.08, 'sine'); }
 
 function playMarioDeathSound() {
-    const mNotes = [330, 294, 262, 196];
-    const timings = [0.0, 0.06, 0.12, 0.18]; 
+    const mNotes = [261.63, 220.00, 196.00, 146.83];
     mNotes.forEach((freq, idx) => {
-        playSoundEffect(freq, 0.12, 0.3, 'sine', timings[idx]);
+        playSoundEffect(freq, 0.15, 0.25, 'sine', idx * 0.07);
     });
 }
 
-function playBeep() { playSoundEffect(440, 0.06, 0.15, 'sine'); }
+function playBeep() { playSoundEffect(523.25, 0.07, 0.15, 'sine'); }
 
 function playRewardSound() {
-    [392, 523, 659].forEach((f, i) => {
-        playSoundEffect(f, 0.1, 0.15, 'sine', i * 0.06);
+    [293.66, 349.23, 440.00, 587.33].forEach((f, i) => {
+        playSoundEffect(f, 0.12, 0.15, 'sine', i * 0.05);
     });
 }
 
@@ -506,10 +508,13 @@ let sceneryItems = [];
 let lastSpawnLane = -1; 
 let animationFrameId = null; 
 
+// Dynamic Global Speed Modifiers based on current Stage index
+let baseRoadSpeed = 550; 
+let playerSpeed = 580;
+
 const player = {
     x: 250, y: 520, 
     width: 58, height: 84, 
-    speed: 560, 
     movingLeft: false, movingRight: false
 };
 
@@ -524,7 +529,12 @@ function checkStageProgression() {
     if (passedCarsCount >= 10) {
         passedCarsCount = 0;
         currentStageIndex = (currentStageIndex < stageJobs.length - 1) ? currentStageIndex + 1 : 0;
-        showRewardNotification("تبریک! شما جایزه خفن این مرحله رو برنده شدید! 🔥");
+        
+        // Progressively scale game environment speed exponentially per stage
+        baseRoadSpeed = 550 + (currentStageIndex * 135);
+        playerSpeed = 580 + (currentStageIndex * 70);
+        
+        showRewardNotification("مرحله جدید! سرعت جاده بیشتر شد! 🚀");
     }
     updateScoreUI();
 }
@@ -614,7 +624,9 @@ class EnemyCar {
         
         this.x = lanes[targetLaneIndex];
         this.y = -130;
-        this.speed = 490 + (currentStageIndex * 115); 
+        
+        // Enemy speed scales matching the road speed boost matrix
+        this.speed = baseRoadSpeed - 50 + (Math.random() * 60); 
         this.passed = false;
         this.cacheKey = this.jobSpec.key + '_' + currentStageIndex;
     }
@@ -631,8 +643,8 @@ function handleEnemies(dt) {
     if (!isPaused && !isBurning) enemySpawnTimer += dt;
     
     let currentType = stageJobs[currentStageIndex].type;
-    let baseInterval = (currentType === 'SPEED_OBSTACLE' || currentType === 'CHAOS') ? 0.44 : 0.82 - (currentStageIndex * 0.08);
-    const spawnInterval = Math.max(0.32, baseInterval);
+    let baseInterval = (currentType === 'SPEED_OBSTACLE' || currentType === 'CHAOS') ? 0.42 : 0.80 - (currentStageIndex * 0.09);
+    const spawnInterval = Math.max(0.28, baseInterval);
     
     if (enemySpawnTimer > spawnInterval && !isPaused && !isBurning) {
         enemies.push(new EnemyCar());
@@ -690,9 +702,8 @@ function drawRoad(dt) {
 
     const leftLimit = canvas.width * 0.08;
     const rightLimit = canvas.width * 0.92 - 6;
-    const currentRoadSpeed = 520 + (currentStageIndex * 115);
 
-    updateAndDrawScenery(currentRoadSpeed, dt);
+    updateAndDrawScenery(baseRoadSpeed, dt);
 
     ctx.fillStyle = '#f59e0b';
     ctx.fillRect(leftLimit, 0, 6, canvas.height);
@@ -706,7 +717,7 @@ function drawRoad(dt) {
     }
 
     ctx.fillStyle = '#ffffff';
-    if (!isPaused && !isBurning) roadLinesY = (roadLinesY + currentRoadSpeed * dt) % 70;
+    if (!isPaused && !isBurning) roadLinesY = (roadLinesY + baseRoadSpeed * dt) % 70;
 
     for (let y = roadLinesY - 70; y < canvas.height; y += 70) {
         ctx.fillRect(canvas.width * 0.38 - 1.5, y, 3, 35);
@@ -723,13 +734,11 @@ function startCountdown() {
     let states = ['3', '2', '1'];
     let current = 0;
 
-    // Fully standardized animation cycles for all numbers to prevent glitches
     function nextTick() {
         if (current < states.length) {
             countdownText.classList.remove('animate');
             countdownText.innerText = states[current];
             
-            // Clean DOM sync step before triggering animation
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     countdownText.classList.add('animate');
@@ -773,6 +782,8 @@ function gameOver() {
 function resetGame() {
     if (audioCtx.state === 'suspended') { audioCtx.resume(); }
     score = 0; currentStageIndex = 0; passedCarsCount = 0; lastSpawnLane = -1;
+    baseRoadSpeed = 550;
+    playerSpeed = 580;
     isBurning = false;
     player.movingLeft = false;
     player.movingRight = false;
@@ -797,10 +808,9 @@ function loop(currentTime) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawRoad(dt);
 
-    // State-based absolute smooth movement decoupled from event listeners
     if (isPlaying && !isPaused && !isBurning) {
-        if (player.movingLeft) player.x -= player.speed * dt;
-        if (player.movingRight) player.x += player.speed * dt;
+        if (player.movingLeft) player.x -= playerSpeed * dt;
+        if (player.movingRight) player.x += playerSpeed * dt;
     }
 
     if (!isBurning) {
@@ -822,7 +832,7 @@ function loop(currentTime) {
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
 
-// Performance Optimizations on Controls (Prevents thread-blocking ticks)
+// Non-blocking isolated control pipelines 
 btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; player.movingRight = false; playClickSound(); } });
 btnLeft.addEventListener('mouseup', () => player.movingLeft = false);
 btnLeft.addEventListener('mouseleave', () => player.movingLeft = false);
@@ -859,3 +869,4 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
+
