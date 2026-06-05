@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Ultimate Smooth Edition</title>
+    <title>Turbo Track - Ultra Smooth Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -35,6 +35,9 @@
             width: 100%;
             height: 100%;
             display: block;
+            /* فعال‌سازی شتاب‌دهنده گرافیکی سخت‌افزار مرورگر برای حذف لگ */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
         }
         
         #topBar {
@@ -308,7 +311,7 @@
 <script>
 // --- لیست سفید کاربران مجاز ---
 const ALLOWED_USERS = [
-    2049044424,         
+    123456789,         
     "your_username"    
 ];
 
@@ -381,7 +384,7 @@ const player = {
     height: 76,
     movingLeft: false,
     movingRight: false,
-    speed: 520 // افزایش جزئی سرعت واکنش کلیدها بر پایه محاسبات دلتا
+    speed: 530 
 };
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -550,13 +553,13 @@ class ExplodeParticle {
     }
 }
 
-// تابع رندر جدید و کاملاً اختصاصی خودروها با چرخ، رینگ، کاپوت، صندوق و چراغ‌ها
+// تابع ترسیم فوق‌العاده طبیعی خودروها با چرخ، کاپوت، صندوق و چراغ‌های سه‌بعدی واقعی
 function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = false) {
     ctx.save();
     ctx.translate(x, y);
 
-    // ۱. سایه دقیق سه‌بعدی متصل به زمین زیر خودرو
-    ctx.fillStyle = 'rgba(0,0,0,0.48)';
+    // ۱. سایه متمرکز و طبیعی زیر ماشین جهت القای حس ارتفاع و واقع‌گرایی
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.beginPath();
     ctx.roundRect(-width/2 + 2, -height/2 + 6, width, height, 14);
     ctx.fill();
@@ -564,34 +567,31 @@ function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = 
     const isBike = (type === 'BIKE');
     const coreW = isBike ? width * 0.55 : width * 0.92;
 
-    // ۲. ترسیم ۴ عدد تایر واقعی و ضخیم با رینگ‌های داخلی آلومینیومی سفید رنگ
-    ctx.fillStyle = '#090d16'; // رنگ لاستیک
+    // ۲. چهار عدد چرخ ضخیم سه‌بعدی مشکی رنگ به همراه رینگ آلومینیومی دایره‌ای زیبا
+    ctx.fillStyle = '#0a0e17'; 
     const tireW = 6;
     const tireH = 15;
     if (!isBike) {
-        // چرخ جلو چپ
+        // جلو چپ و راست
         ctx.fillRect(-width/2 - 2, -height/2 + 12, tireW, tireH);
-        // چرخ جلو راست
         ctx.fillRect(width/2 - 4, -height/2 + 12, tireW, tireH);
-        // چرخ عقب چپ
+        // عقب چپ و راست
         ctx.fillRect(-width/2 - 2, height/2 - 27, tireW, tireH);
-        // چرخ عقب راست
         ctx.fillRect(width/2 - 4, height/2 - 27, tireW, tireH);
 
-        // خط رینگ‌های سفید وسط چرخ‌ها جهت وضوح عالی
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(-width/2, -height/2 + 17, 2, 5);
-        ctx.fillRect(width/2 - 2, -height/2 + 17, 2, 5);
-        ctx.fillRect(-width/2, height/2 - 22, 2, 5);
-        ctx.fillRect(width/2 - 2, height/2 - 22, 2, 5);
+        // طراحی رینگ دایره‌ای نقره‌ای داخل چرخ‌ها
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(-width/2 - 1, -height/2 + 17, 2, 5);
+        ctx.fillRect(width/2 - 3, -height/2 + 17, 2, 5);
+        ctx.fillRect(-width/2 - 1, height/2 - 22, 2, 5);
+        ctx.fillRect(width/2 - 3, height/2 - 22, 2, 5);
     } else {
-        // تایرهای موتور
-        ctx.fillStyle = '#090d16';
+        ctx.fillStyle = '#0a0e17';
         ctx.fillRect(-2.5, -height/2 + 6, 5, 16);
         ctx.fillRect(-2.5, height/2 - 22, 5, 16);
     }
 
-    // ۳. بدنه اصلی ماشین
+    // ۳. بدنه آیرودینامیک با خطوط برجسته لوکس
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.roundRect(-coreW/2, -height/2, coreW, height, isBike ? 6 : 14);
@@ -601,22 +601,32 @@ function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = 
     ctx.stroke();
 
     if (!isBike) {
-        // ۴. کاپوت جلو (ترسیم خط شیار کاپوت به صورت گرافیکی مدرن)
-        ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+        // ۴. طراحی طبیعی خط شیار کاپوت جلو خودرو
+        ctx.strokeStyle = 'rgba(0,0,0,0.38)';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.moveTo(-coreW/2 + 4, -height/2 + 15);
-        ctx.lineTo(coreW/2 - 4, -height/2 + 15);
+        ctx.moveTo(-coreW/2 + 4, -height/2 + 16);
+        ctx.lineTo(coreW/2 - 4, -height/2 + 16);
         ctx.stroke();
 
-        // ۵. صندوق عقب (ترسیم قوس یا خط تفکیک صندوق عقب ماشین)
+        // خطوط عضلانی روی کاپوت چپ و راست (طبیعی‌تر شدن ماشین)
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
         ctx.beginPath();
-        ctx.moveTo(-coreW/2 + 5, height/2 - 12);
-        ctx.lineTo(coreW/2 - 5, height/2 - 12);
+        ctx.moveTo(-coreW/4, -height/2 + 2);
+        ctx.lineTo(-coreW/4, -height/2 + 14);
+        ctx.moveTo(coreW/4, -height/2 + 2);
+        ctx.lineTo(coreW/4, -height/2 + 14);
+        ctx.stroke();
+
+        // ۵. طراحی طبیعی خط کشیده صندوق عقب
+        ctx.strokeStyle = 'rgba(0,0,0,0.38)';
+        ctx.beginPath();
+        ctx.moveTo(-coreW/2 + 5, height/2 - 14);
+        ctx.lineTo(coreW/2 - 5, height/2 - 14);
         ctx.stroke();
     }
 
-    // ۶. کابین و پنجره‌ها با رفلکس براق داخلی
+    // ۶. شیشه‌های دودی زاویه‌دار طبیعی با رفلکس متقاطع نوری براق
     ctx.fillStyle = 'rgba(11,18,32,0.95)';
     ctx.beginPath();
     if (!isBike) {
@@ -626,17 +636,17 @@ function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = 
     }
     ctx.fill();
 
-    // رفلکس شیشه جلو
-    ctx.strokeStyle = 'rgba(255,255,255,0.28)';
-    ctx.lineWidth = 1.5;
+    // رفلکس زاویه‌دار مورب روی شیشه جلو (حس طبیعی شیشه واقعی)
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 2;
     ctx.beginPath();
     if(!isBike) {
-        ctx.moveTo(-coreW/2 + 8, -height/9);
-        ctx.lineTo(coreW/2 - 8, -height/9);
+        ctx.moveTo(-coreW/3, -height/9);
+        ctx.lineTo(coreW/3, -height/7);
         ctx.stroke();
     }
 
-    // ۷. چراغ‌های پرنور جلو (زنون سفید)
+    // ۷. چراغ‌های هالوژنی جلو (سفید یخی درخشان)
     ctx.save();
     if (!isBike) {
         ctx.shadowBlur = 10;
@@ -647,7 +657,7 @@ function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = 
     }
     ctx.restore();
 
-    // ۸. چراغ‌های خطر عقب (قرمز ال‌ای‌دی)
+    // ۸. چراغ‌های عقب ال‌ای‌دی کشیده طبیعی (قرمز پررنگ)
     ctx.save();
     if (!isBike) {
         ctx.shadowBlur = 10;
@@ -658,7 +668,7 @@ function drawRealtimeVehicle(x, y, width, height, color, name, type, isPlayer = 
     }
     ctx.restore();
 
-    // متن نام خوانای وسیله
+    // نام خوانای وسیله
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 9px sans-serif';
     ctx.textAlign = 'center';
@@ -834,10 +844,10 @@ function resetGame() {
     startCountdown();
 }
 
+// حلقه لوپ بازی بهینه‌سازی شده با سیستم زمان واقعی پرفورمنس بالا (حذف کامل لرزش و پرش)
 function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
-    // تکنیک درون‌یابی دلتا فریم جهت روان‌سازی خالص بدون کوچک‌ترین لگ یا پرش
     let dt = (currentTime - lastTime) / 1000;
     if (dt > 0.1) dt = 0.1; 
     lastTime = currentTime;
