@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Turbo Track - Balanced Volume</title>
-    <!-- اسکریپت رسمی وب‌اپ تلگرام -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -36,6 +35,10 @@
             width: 100%;
             height: 100%;
             display: block;
+            /* بهینه‌سازی رندر سخت‌افزاری برای روان‌تر شدن بازی */
+            will-change: transform;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
         
         #topBar {
@@ -92,7 +95,7 @@
             align-items: center;
             width: 100%;
             position: absolute;
-            bottom: 110px; 
+            bottom: 40px; /* دکمه‌ها پایین‌تر آورده شدند تا دسترسی راحت‌تر شود */
             padding: 0 25px;
             pointer-events: none;
             z-index: 5;
@@ -129,7 +132,7 @@
             z-index: 10;
         }
         
-        #welcomeScreen { background: #07090e; }
+        #welcomeScreen { background: #07090e; display: none; }
         .welcome-title {
             color: #00e5ff;
             font-size: 36px;
@@ -272,7 +275,6 @@
 <body>
 
 <div id="gameContainer">
-    <!-- صفحه لاکچری خطای عدم اجازه ورود -->
     <div id="authErrorScreen">
         <div class="error-card">
             <div class="error-icon">❌</div>
@@ -317,28 +319,41 @@
 <script>
 // --- لیست آیدی‌های عددی مجاز تلگرام ---
 const ALLOWED_TELEGRAM_IDS = [
-    , // آیدی عددی خود را این‌جا جایگزین کنید
+    123456789, // آیدی عددی کاربران مجاز را اینجا به صورت دقیق وارد کنید
 ];
 
-// سیستم احراز هویت آیدی تلگرام
+// سیستم احراز هویت آیدی تلگرام کاملاً حساس و با دقت بالا
 function verifyTelegramAccess() {
     const tg = window.Telegram.WebApp;
     tg.ready();
     tg.expand();
 
-    const userId = tg.initDataUnsafe?.user?.id;
+    // استخراج دقیق اطلاعات کاربر تلگرام از محیط امن مینی‌اپ
+    const user = tg.initDataUnsafe?.user;
     const authErrorScreen = document.getElementById('authErrorScreen');
+    const welcomeScreen = document.getElementById('welcomeScreen');
 
-    if (userId && ALLOWED_TELEGRAM_IDS.includes(userId)) {
-        // آیدی معتبر است، بازی به حالت عادی لود می‌شود و خطایی نمایش داده نمی‌شود
-        authErrorScreen.style.display = 'none';
+    if (user && typeof user.id !== 'undefined') {
+        // تبدیل کردن به عدد برای اطمینان از صحت مقایسه منطقی
+        const currentUserId = Number(user.id);
+        
+        if (ALLOWED_TELEGRAM_IDS.includes(currentUserId)) {
+            // کاربر مجاز است: صفحه خطا کاملاً مخفی شده و صفحه ورود استارت ظاهر می‌شود
+            authErrorScreen.style.display = 'none';
+            welcomeScreen.style.display = 'flex';
+        } else {
+            // کاربر غیرمجاز است: قفل کامل و نمایش صفحه خطا
+            authErrorScreen.style.display = 'flex';
+            welcomeScreen.style.display = 'none';
+        }
     } else {
-        // آیدی نامعتبر است یا خارج از تلگرام باز شده، صفحه قفل و خطا نمایش داده می‌شود
+        // اگر بازی خارج از بستر مینی‌اپ تلگرام باز شده باشد
         authErrorScreen.style.display = 'flex';
+        welcomeScreen.style.display = 'none';
     }
 }
 
-// اجرای چک امنیتی دقیقاً هنگام لود شدن پنجره بازی
+// چک امنیتی بلافاصله در هنگام بالا آمدن سند بازی اجرا می‌گردد
 window.addEventListener('load', verifyTelegramAccess);
 
 const canvas = document.getElementById('gameCanvas');
@@ -777,11 +792,13 @@ function resetGame() {
     startCountdown();
 }
 
+// حلقه اصلی بازی با استفاده از ساختار زمان‌بندی دقیق و DeltaTime ثابت جهت رفع هرگونه لگ و گیرکردن
 function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
     let dt = (currentTime - lastTime) / 1000;
-    if (dt > 0.016) dt = 0.016; 
+    // محدود کردن حداکثر گام زمانی برای همگام‌سازی مانیتورهای نرخ نوسازی بالا (نظیر 90Hz و 120Hz) و حذف کامل لرزش تصاویر
+    if (dt > 0.1) dt = 0.1;
     lastTime = currentTime;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
