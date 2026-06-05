@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Hyper Smooth</title>
+    <title>Turbo Track - Premium Smooth</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -433,120 +433,124 @@ const stageJobs = [
     { key: 'fire', name: 'FIRE', type: 'CHAOS', color: '#f43f5e' }             
 ];
 
-// انبار کش تصاویر برای ذخیره کردن ماشین‌های رندر شده پیش‌فرض
 const carCache = {};
 
-// تابع تولید گرافیک ماشین فوق‌العاده باکیفیت به صورت ایزوله برای کش شدن در حافظه سیستم
+// تابع اختصاصی پیش‌رندر دقیقاً بر اساس عکس ارسالی (فرم ارگونومیک، تخت و فوق روان)
 function preRenderVehicleToCache(color, name, type, width, height, cacheKey) {
     const offCanvas = document.createElement('canvas');
-    offCanvas.width = width + 20;
-    offCanvas.height = height + 20;
+    // فضای کافی برای تایرها و حاشیه‌ها
+    offCanvas.width = width + 24;
+    offCanvas.height = height + 24;
     const octx = offCanvas.getContext('2d');
     
     octx.translate(offCanvas.width / 2, offCanvas.height / 2);
 
-    // ۱. سایه بسیار نرم و پخش شده بدون افت فریم
-    octx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-    octx.fillRect(-width/2 + 3, -height/2 + 6, width, height);
-
     const isBike = (type === 'BIKE');
-    const coreW = isBike ? width * 0.55 : width * 0.92;
+    const bodyW = isBike ? width * 0.55 : width * 0.90;
+    const bodyH = height;
 
-    // ۲. چرخ‌های پهن روتین با رینگ‌های اسپرت ۵ پره نقره‌ای پر جزییات
-    octx.fillStyle = '#090d14';
+    // ۱. تایرهای مستطیلی خاکستری با حاشیه تیره (دقیقاً مثل عکس)
+    octx.fillStyle = '#8fa3b5'; 
+    octx.strokeStyle = '#0e131a';
+    octx.lineWidth = 2;
+
     if (!isBike) {
-        octx.fillRect(-width/2 - 2, -height/2 + 10, 6, 15);
-        octx.fillRect(width/2 - 4, -height/2 + 10, 6, 15);
-        octx.fillRect(-width/2 - 2, height/2 - 25, 6, 15);
-        octx.fillRect(width/2 - 4, height/2 - 25, 6, 15);
+        const tireW = 7;
+        const tireH = 16;
+        const offsetX = width / 2;
+        const offsetY = height / 2 - 12;
 
-        // رینگ‌های آلومینیومی شیک رونق یافته
-        octx.fillStyle = '#cbd5e1';
-        octx.fillRect(-width/2 - 1, -height/2 + 15, 2, 5);
-        octx.fillRect(width/2 - 3, -height/2 + 15, 2, 5);
-        octx.fillRect(-width/2 - 1, height/2 - 20, 2, 5);
-        octx.fillRect(width/2 - 3, height/2 - 20, 2, 5);
+        // تایر جلو چپ
+        octx.fillRect(-offsetX - 2, -offsetY, tireW, tireH); octx.strokeRect(-offsetX - 2, -offsetY, tireW, tireH);
+        // تایر جلو راست
+        octx.fillRect(offsetX - 5, -offsetY, tireW, tireH); octx.strokeRect(offsetX - 5, -offsetY, tireW, tireH);
+        // تایر عقب چپ
+        octx.fillRect(-offsetX - 2, offsetY - 4, tireW, tireH); octx.strokeRect(-offsetX - 2, offsetY - 4, tireW, tireH);
+        // تایر عقب راست
+        octx.fillRect(offsetX - 5, offsetY - 4, tireW, tireH); octx.strokeRect(offsetX - 5, offsetY - 4, tireW, tireH);
     } else {
-        octx.fillRect(-2, -height/2 + 6, 4, 15);
-        octx.fillRect(-2, height/2 - 21, 4, 15);
+        octx.fillRect(-3, -bodyH/2 + 4, 6, 15); octx.strokeRect(-3, -bodyH/2 + 4, 6, 15);
+        octx.fillRect(-3, bodyH/2 - 19, 6, 15); octx.strokeRect(-3, bodyH/2 - 19, 6, 15);
     }
 
-    // ۳. بدنه اصلی براق با هایلایت نوری مسابقه‌ای روی سقف
+    // ۲. فرم بدنه اصلی ایرودینامیک منحنی (مشابه عکس ارسالی)
     octx.fillStyle = color;
-    octx.fillRect(-coreW/2, -height/2, coreW, height);
-    
-    // استروک محیطی تیره لوکس برای عمق دادن
-    octx.lineWidth = 2;
-    octx.strokeStyle = '#02050b';
-    octx.strokeRect(-coreW/2, -height/2, coreW, height);
+    octx.beginPath();
+    octx.moveTo(-bodyW / 2, -bodyH / 2 + 12);
+    // منحنی سقف جلو ماشین
+    octx.bezierCurveTo(-bodyW / 2, -bodyH / 2 - 2, bodyW / 2, -bodyH / 2 - 2, bodyW / 2, -bodyH / 2 + 12);
+    octx.lineTo(bodyW / 2, bodyH / 2 - 12);
+    // منحنی نرم بخش عقب ماشین
+    octx.bezierCurveTo(bodyW / 2, bodyH / 2 + 4, -bodyW / 2, bodyH / 2 + 4, -bodyW / 2, bodyH / 2 - 12);
+    octx.closePath();
+    octx.fill();
 
+    // دور دوزی مشکی ضخیم بدنه ماشین برای جلوه فلات دکوری
+    octx.strokeStyle = '#0d1117';
+    octx.lineWidth = 2.5;
+    octx.stroke();
+
+    // خطوط ظریف روی کاپوت
     if (!isBike) {
-        // خطوط زیبای هواکش روی کاپوت
-        octx.strokeStyle = 'rgba(0,0,0,0.35)';
+        octx.strokeStyle = 'rgba(0,0,0,0.15)';
         octx.lineWidth = 1.5;
         octx.beginPath();
-        octx.moveTo(-coreW/2 + 5, -height/2 + 16);
-        octx.lineTo(coreW/2 - 5, -height/2 + 16);
-        octx.stroke();
-
-        // خطوط دوبل آیرودینامیک کاپوت جلو خودرو
-        octx.strokeStyle = 'rgba(255,255,255,0.18)';
-        octx.beginPath();
-        octx.moveTo(-coreW/4, -height/2 + 2); octx.lineTo(-coreW/4, -height/2 + 13);
-        octx.moveTo(coreW/4, -height/2 + 2); octx.lineTo(coreW/4, -height/2 + 13);
-        octx.stroke();
-
-        // شیار منحنی صندوق عقب
-        octx.strokeStyle = 'rgba(0,0,0,0.32)';
-        octx.beginPath();
-        octx.moveTo(-coreW/2 + 5, height/2 - 14);
-        octx.lineTo(coreW/2 - 5, height/2 - 14);
+        octx.moveTo(-bodyW/4, -bodyH/2 + 6);
+        octx.quadraticCurveTo(0, -bodyH/2 + 14, bodyW/4, -bodyH/2 + 6);
         octx.stroke();
     }
 
-    // ۴. شیشه‌های دودی سه‌بعدی با خط شیشه‌ای رفلکس متقاطع
-    octx.fillStyle = '#090f1c';
-    if (!isBike) {
-        octx.fillRect(-coreW/2 + 4, -height/6, coreW - 8, height * 0.45);
-        
-        // خط انعکاس براق روی شیشه
-        octx.strokeStyle = 'rgba(255,255,255,0.3)';
-        octx.lineWidth = 2;
-        octx.beginPath();
-        octx.moveTo(-coreW/3, -height/10);
-        octx.lineTo(coreW/3, -height/7);
-        octx.stroke();
-    } else {
-        octx.fillRect(-coreW/4, -2, coreW/2, height * 0.22);
-    }
+    // ۳. شیشه بزرگ دودی یکپارچه وسط بدنه (دقیقاً مثل تصویر ارسالی)
+    const winW = bodyW * 0.76;
+    const winH = bodyH * 0.46;
+    const winY = -bodyH * 0.12;
 
-    // ۵. سیستم روشنایی (چراغ جلو سفید یخی متالیک و چراغ عقب نئون قرمز)
-    if (!isBike) {
-        octx.fillStyle = '#ffffff';
-        octx.fillRect(-coreW/2 + 2, -height/2, 6, 3);
-        octx.fillRect(coreW/2 - 8, -height/2, 6, 3);
+    octx.fillStyle = '#112233';
+    octx.beginPath();
+    octx.moveTo(-winW / 2, winY + 10);
+    octx.bezierCurveTo(-winW / 2, winY - 4, winW / 2, winY - 4, winW / 2, winY + 10);
+    octx.bezierCurveTo(winW / 2, winY + winH, -winW / 2, winY + winH, -winW / 2, winY + 10);
+    octx.closePath();
+    octx.fill();
+    octx.strokeStyle = '#0d1117';
+    octx.lineWidth = 2;
+    octx.stroke();
 
-        octx.fillStyle = '#f43f5e';
-        octx.fillRect(-coreW/2 + 2, height/2 - 3, 6, 3);
-        octx.fillRect(coreW/2 - 8, height/2 - 3, 6, 3);
-    }
+    // خط سفید براق و کوچک روی شیشه دودی (انعکاس نور تصویر شما)
+    octx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+    octx.lineWidth = 2;
+    octx.beginPath();
+    octx.arc(-winW/4, winY + 6, 6, Math.PI, Math.PI*1.5);
+    octx.stroke();
 
-    // ۶. فونت ضخیم و باکیفیت اسم ماشین
+    // ۴. چراغ‌های جلو مستطیلی سفید مایل به بیرون
     octx.fillStyle = '#ffffff';
-    octx.font = '900 9px sans-serif';
+    if (!isBike) {
+        octx.fillRect(-bodyW/2 + 1, -bodyH/2 + 2, 7, 3);
+        octx.fillRect(bodyW/2 - 8, -bodyH/2 + 2, 7, 3);
+    }
+
+    // ۵. چراغ‌های عقب خطی قرمز تخت لبه پایینی جاده
+    octx.fillStyle = '#ff2222';
+    if (!isBike) {
+        octx.fillRect(-bodyW/2 + 2, bodyH/2 - 3, 10, 3);
+        octx.fillRect(bodyW/2 - 12, bodyH/2 - 3, 10, 3);
+    }
+
+    // ۶. متن ضخیم با فونت فلات وسط شیشه
+    octx.fillStyle = '#ffffff';
+    octx.font = '900 10px sans-serif';
     octx.textAlign = 'center';
     octx.textBaseline = 'middle';
-    octx.fillText(name, 0, isBike ? -8 : 4);
+    octx.fillText(name, 0, winY + winH / 2);
 
     carCache[cacheKey] = offCanvas;
 }
 
-// ساخت کش برای تمام ماشین‌ها یکبار برای همیشه (به محض لود شدن برنامه)
 function generateAllCarCaches() {
-    // ماشین کاربر (YOU)
+    // اعمال ظاهر شیک جدید برای ماشین شما و بقیه ماشین‌ها
     preRenderVehicleToCache('#00e5ff', 'YOU', 'STANDARD', player.width, player.height, 'player_car');
     
-    // ماشین‌های مراحل
     stageJobs.forEach(job => {
         const w = (job.type === 'BIG_SIZE') ? 54 : (job.type === 'BIKE' ? 28 : 48);
         const h = (job.type === 'BIG_SIZE') ? 92 : 76;
@@ -648,7 +652,6 @@ class ExplodeParticle {
     }
 }
 
-// تابع ترسیم سریع نقاشی آماده از کش بدون کوچک‌ترین محاسبات ریاضی سنگین در فریم ثانیه
 function drawCachedVehicle(x, y, cacheKey) {
     const img = carCache[cacheKey];
     if (img) {
@@ -827,7 +830,7 @@ function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
     let dt = (currentTime - lastTime) / 1000;
-    if (dt > 0.04) dt = 0.04; // بستن بازه محاسباتی برای از بین بردن ۱۰۰ درصد لرزش فریم زمانبندی
+    if (dt > 0.04) dt = 0.04; // قفل لوپ زمانی فرعی برای حذف لرزش جاده
     lastTime = currentTime;
 
     ctx.fillStyle = '#05070a';
@@ -885,7 +888,7 @@ restartBtn.addEventListener('click', resetGame);
 
 window.addEventListener('load', () => {
     resizeCanvas();
-    generateAllCarCaches(); // رندر تصاویر ماشین‌ها در رم مرورگر به محض اجرای اولیه
+    generateAllCarCaches(); 
     player.x = canvas.width / 2; player.y = 520;
     initScenery();
 });
