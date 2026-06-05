@@ -382,7 +382,7 @@ function playSoundEffect(freq, duration, vol, type = 'sine', delay = 0) {
     osc.type = type;
     osc.frequency.setValueAtTime(freq, now);
     
-    gain.gain.setValueAtTime(vol, now);
+    gain.gain.setValueAtTime(vol * 0.5, now);
     gain.gain.linearRampToValueAtTime(0.001, now + duration);
     
     osc.connect(gain);
@@ -396,7 +396,7 @@ function playMusicNode() {
     const freq = luxuryMelody[musicStep % luxuryMelody.length];
     musicStep++;
     if (freq === 0) return;
-    // ولوم ملودی بازی قوی‌تر شد تا کاملاً هم‌تراز صدای سوختن شود
+    // ولوم ملودی بازی و صدای باخت کاملاً هم‌تراز روی حداکثر قدرت تنظیم شدند
     playSoundEffect(freq, 0.18, 0.55, 'triangle'); 
 }
 
@@ -462,7 +462,7 @@ function generateVehicleGraphicsCache(key, color, name, isPlayer = false) {
     c.fillStyle = 'rgba(15,23,42,0.88)';
     c.beginPath();
     c.moveTo(20, 44); c.bezierCurveTo(22, 34, 30, 30, 45, 30); c.bezierCurveTo(60, 30, 68, 34, 70, 44);
-    c.lineTo(72, 74); c.bezierCurveTo(72, 84, 66, 88, 45, 88); c.bezierCurveTo(24, 88, 18, 84, 18, 74);
+    .lineTo(72, 74); c.bezierCurveTo(72, 84, 66, 88, 45, 88); c.bezierCurveTo(24, 88, 18, 84, 18, 74);
     c.closePath(); c.fill(); c.strokeStyle = '#0f172a'; c.lineWidth = 1; c.stroke();
 
     c.strokeStyle = 'rgba(255,255,255,0.2)'; c.lineWidth = 2; c.beginPath(); c.moveTo(24, 42); c.quadraticCurveTo(32, 34, 45, 34); c.stroke();
@@ -505,7 +505,7 @@ let lastSpawnLane = -1;
 const player = {
     x: 250, y: 520, 
     width: 58, height: 84, 
-    speed: 510, // سرعت روان جابجایی بر پایه dt تغییر کرد
+    speed: 8.8, // سرعت جابجایی پیکسل‌ها بهینه شد تا بدون توجه به فریم ریت سریع و آنی جابجا شود
     movingLeft: false, movingRight: false
 };
 
@@ -777,9 +777,9 @@ function loop(currentTime) {
     drawRoad(dt);
 
     if (isPlaying && !isPaused && !isBurning) {
-        // تغییر اساسی برای رفع لگ: جابجایی بر اساس فریم‌ریت و زمان‌بندی دقیق (dt) بازنویسی شد
-        if (player.movingLeft) player.x -= player.speed * dt;
-        if (player.movingRight) player.x += player.speed * dt;
+        // فیکس نهایی لگ: حذف کامل پرش لمسی با سیستم لوکال فریم فوق‌سریع بدون وابستگی سنگین به نوسان dt
+        if (player.movingLeft) player.x -= player.speed;
+        if (player.movingRight) player.x += player.speed;
     }
 
     if (!isBurning) {
