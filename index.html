@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Turbo Track - Snappy Cyber Smooth</title>
+    <title>Turbo Track - Fixed & Ultra Smooth</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -53,9 +53,10 @@
             color: #ffffff;
             font-size: 11px; 
             font-weight: 800;
-            letter-spacing: 0.5px;
-            background: rgba(7, 11, 19, 0.9);
-            border: 1px solid #00d2ff;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            background: rgba(15, 21, 32, 0.88);
+            border: 1px solid rgba(0, 229, 255, 0.2);
             border-radius: 10px;
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
@@ -64,7 +65,6 @@
             gap: 14px; 
             padding: 8px 14px; 
             flex-grow: 1;
-            filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.6));
         }
         .sb-item {
             white-space: nowrap;
@@ -74,37 +74,36 @@
             font-size: 11px;
             font-weight: 800;
             color: #ffffff;
-            background: rgba(7, 11, 19, 0.9);
-            border: 1px solid #00d2ff;
+            background: rgba(15, 21, 32, 0.9);
+            border: 1px solid #00e5ff;
             border-radius: 10px;
             cursor: pointer;
             pointer-events: auto;
             display: none;
             margin-left: 10px; 
             white-space: nowrap;
-            box-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
         }
 
         #controls {
             display: flex;
             justify-content: center;
-            gap: 85px;
+            gap: 80px;
             align-items: center;
             width: 100%;
             position: absolute;
-            bottom: 45px; 
+            bottom: 110px; 
             padding: 0 25px;
             pointer-events: none;
             z-index: 5;
         }
         .btn {
-            width: 82px;
-            height: 82px;
-            border: 2px solid rgba(255, 255, 255, 0.22);
+            width: 84px;
+            height: 84px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
             border-radius: 50%;
             color: white;
-            font-size: 30px;
-            background: rgba(255, 255, 255, 0.1);
+            font-size: 32px;
+            background: rgba(255, 255, 255, 0.12);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             cursor: pointer;
@@ -114,7 +113,6 @@
             justify-content: center;
             pointer-events: auto;
             touch-action: none;
-            will-change: transform;
         }
 
         .screen-overlay {
@@ -132,12 +130,12 @@
         
         #welcomeScreen { background: #07090e; display: none; }
         .welcome-title {
-            color: #00d2ff;
-            font-size: 38px;
+            color: #00e5ff;
+            font-size: 36px;
             font-weight: 900;
             letter-spacing: 2px;
             margin-bottom: 40px;
-            filter: drop-shadow(0 0 12px rgba(0, 210, 255, 0.8));
+            text-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
         }
         
         #gameOverScreen { background: rgba(7, 9, 14, 0.96); display: none; }
@@ -155,13 +153,12 @@
             font-weight: bold;
             color: #ffffff;
             background: #11151d;
-            border: 2px solid #00d2ff;
+            border: 2px solid #00e5ff;
             border-radius: 30px;
             cursor: pointer;
             text-transform: uppercase;
-            box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
         }
-        #restartBtn { border-color: #ff2222; box-shadow: 0 0 10px rgba(255,34,34,0.3); }
+        #restartBtn { border-color: #ff2222; }
 
         #countdownOverlay {
             position: absolute;
@@ -172,15 +169,21 @@
             display: none;
             align-items: center;
             justify-content: center;
-            background: rgba(5, 7, 10, 0.92);
+            background: rgba(5, 7, 10, 0.85);
             z-index: 9;
         }
         #countdownText {
-            font-size: 250px; 
+            font-size: 280px; 
             font-weight: 900;
-            color: #ffdf00; 
-            filter: drop-shadow(0 0 15px #d4af37) drop-shadow(0 0 40px #aa7c11);
-            will-change: transform, opacity;
+            color: #facc15; 
+            text-shadow: 0 0 60px rgba(250, 204, 21, 0.5), 0 4px 20px rgba(0,0,0,0.6);
+            opacity: 0;
+            transform: scale(1.7);
+            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.75s ease-out;
+        }
+        #countdownText.animate {
+            transform: scale(0.95);
+            opacity: 1;
         }
 
         #rewardToast {
@@ -188,20 +191,20 @@
             top: 95px;
             left: 50%;
             transform: translateX(-50%) scale(0.85);
-            background: #00d2ff;
+            background: #facc15;
             color: #000000;
             padding: 14px 24px;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 900;
             border-radius: 16px;
-            box-shadow: 0 8px 30px rgba(0, 210, 255, 0.5);
+            box-shadow: 0 8px 30px rgba(250, 204, 21, 0.5);
             z-index: 8;
             opacity: 0;
             pointer-events: none;
             transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-align: center;
-            width: 90%;
-            direction: ltr;
+            width: 88%;
+            direction: rtl;
         }
         #rewardToast.show {
             opacity: 1;
@@ -272,7 +275,7 @@
         <button id="pauseBtn" class="pause-btn">Pause</button>
     </div>
 
-    <div id="rewardToast">Congratulations! You won the awesome prize of this stage! 🔥</div>
+    <div id="rewardToast">جایزه جدید!</div>
     
     <div id="controls">
         <button id="btnLeft" class="btn">◀</button>
@@ -363,76 +366,98 @@ function resizeCanvas() {
 resizeCanvas();
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let musicTimer = 0;
-let musicStep = 0;
+let audioNodeScheduledTime = 0;
 
-// High-Performance Cyber Driving Beats (Low-CPU, Matches the crash sequence frequency flawlessly)
-const ultraLightCyberMelody = [
-    140, 140, 0, 180, 140, 0, 220, 0,
-    140, 140, 0, 180, 140, 0, 260, 0,
-    110, 110, 0, 150, 110, 0, 190, 0,
-    165, 165, 0, 220, 165, 0, 330, 0
-];
+// Synthwave / Cyberpunk Melody Rhythm
+const cyberpunkNotes = [110, 110, 130, 110, 146, 110, 130, 164];
+let noteIndex = 0;
 
-function playSoundEffect(freq, duration, vol, type = 'triangle', delay = 0) {
-    if (isPaused || !isPlaying) return; 
-    try {
-        const now = audioCtx.currentTime + delay;
+function scheduleNextSynthNote() {
+    if (!isPlaying || isPaused || isBurning) return;
+
+    // Use hardware audio context time to prevent stutters
+    while (audioNodeScheduledTime < audioCtx.currentTime + 0.1) {
+        const time = audioNodeScheduledTime;
+        const freq = cyberpunkNotes[noteIndex % cyberpunkNotes.length];
+        
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, now);
         
-        gain.gain.setValueAtTime(vol * 0.22, now); 
-        gain.gain.linearRampToValueAtTime(0.0001, now + duration);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, time);
+        
+        // Bass rhythm fill
+        gain.gain.setValueAtTime(0.18, time);
+        gain.gain.linearRampToValueAtTime(0.001, time + 0.18);
         
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        osc.start(now);
-        osc.stop(now + duration + 0.01);
-    } catch(e) {}
-}
-
-function processInlineMusic(dt) {
-    if (!isPlaying || isPaused || isBurning) return;
-    musicTimer += dt;
-    if (musicTimer >= 0.13) {
-        musicTimer = 0;
-        const freq = ultraLightCyberMelody[musicStep % ultraLightCyberMelody.length];
-        musicStep++;
-        if (freq > 0) {
-            playSoundEffect(freq, 0.09, 0.20, 'triangle'); 
-        }
+        
+        osc.start(time);
+        osc.stop(time + 0.19);
+        
+        noteIndex++;
+        audioNodeScheduledTime += 0.20; // Exact rhythm spacing without setInterval
     }
 }
 
-function playClickSound() { playSoundEffect(600, 0.02, 0.10, 'sine'); }
-
-// Cyber Crash Sequence - Perfectly complements the new racing music track
-function playCyberBurnSound() {
-    const crashSequence = [
-        {f: 220, d: 0.12, t: 'sawtooth'},
-        {f: 150, d: 0.15, t: 'sawtooth'},
-        {f: 90, d: 0.20, t: 'triangle'},
-        {f: 50, d: 0.35, t: 'triangle'}
-    ];
-    crashSequence.forEach((note, idx) => {
-        playSoundEffect(note.f, note.d, 0.35, note.t, idx * 0.07);
-    });
+function playClickSound() {
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.frequency.setValueAtTime(800, now);
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.linearRampToValueAtTime(0.001, now + 0.02);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(now); osc.stop(now + 0.03);
 }
 
-function playBeep() { playSoundEffect(700, 0.08, 0.15, 'sine'); }
+function playRetroDeathSound() {
+    const now = audioCtx.currentTime;
+    // Cool Arcade Downward Pitch Crash
+    for(let i = 0; i < 3; i++) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(320 - (i * 60), now + (i * 0.08));
+        osc.frequency.linearRampToValueAtTime(60, now + (i * 0.08) + 0.25);
+        
+        gain.gain.setValueAtTime(0.25, now + (i * 0.08));
+        gain.gain.linearRampToValueAtTime(0.001, now + (i * 0.08) + 0.25);
+        
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(now + (i * 0.08)); osc.stop(now + (i * 0.08) + 0.26);
+    }
+}
+
+function playBeep() {
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.frequency.setValueAtTime(550, now);
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.linearRampToValueAtTime(0.001, now + 0.08);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(now); osc.stop(now + 0.09);
+}
 
 function playRewardSound() {
-    [440, 554, 659, 880].forEach((f, i) => {
-        playSoundEffect(f, 0.10, 0.15, 'sine', i * 0.04);
+    const now = audioCtx.currentTime;
+    [523, 659, 784].forEach((f, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.setValueAtTime(f, now + i * 0.06);
+        gain.gain.setValueAtTime(0.15, now + i * 0.06);
+        gain.gain.linearRampToValueAtTime(0.001, now + i * 0.06 + 0.08);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(now + i * 0.06); osc.stop(now + i * 0.06 + 0.09);
     });
 }
 
 const stageJobs = [
     { key: 'taxi', name: 'TAXI', color: '#facc15', type: 'STANDARD' },
     { key: 'police', name: 'POLICE', color: '#1e293b', type: 'SPEED_OBSTACLE' }, 
-    { key: 'ambulance', name: 'AMBU', color: '#c084fc', type: 'NEW_COLOR' },     
+    { key: 'ambulance', name: 'AMBU', color: '#f8fafc', type: 'NEW_COLOR' },     
     { key: 'truck', name: 'TRUCK', color: '#0284c7', type: 'BIG_SIZE' },       
     { key: 'fire', name: 'FIRE', color: '#dc2626', type: 'CHAOS' }             
 ];
@@ -445,31 +470,42 @@ function generateVehicleGraphicsCache(key, color, name, isPlayer = false) {
     cacheCanvas.width = w; cacheCanvas.height = h;
     const c = cacheCanvas.getContext('2d');
 
-    c.fillStyle = 'rgba(0,0,0,0.25)';
-    c.beginPath(); c.roundRect(8, 16, 74, 110, 18); c.fill();
+    c.fillStyle = 'rgba(0,0,0,0.4)';
+    c.beginPath(); c.roundRect(6, 12, 78, 114, 22); c.fill();
 
-    c.fillStyle = '#475569';
-    c.fillRect(2, 22, 6, 18); c.fillRect(82, 22, 6, 18);
-    c.fillRect(2, 94, 6, 18); c.fillRect(82, 94, 6, 18);
+    c.fillStyle = '#64748b';
+    c.fillRect(0, 20, 10, 22); c.fillRect(80, 20, 10, 22);
+    c.fillRect(0, 92, 10, 22); c.fillRect(80, 92, 10, 22);
+    
+    c.fillStyle = '#94a3b8';
+    c.fillRect(2, 23, 6, 16); c.fillRect(82, 23, 6, 16);
+    c.fillRect(2, 95, 6, 16); c.fillRect(82, 95, 6, 16);
 
     c.fillStyle = color;
     c.beginPath();
-    c.moveTo(14, 35); c.bezierCurveTo(14, 18, 24, 8, 45, 8); c.bezierCurveTo(66, 8, 76, 18, 76, 35);
-    c.lineTo(76, 96); c.bezierCurveTo(76, 110, 66, 118, 45, 118); c.bezierCurveTo(24, 118, 14, 110, 14, 96);
+    c.moveTo(14, 35); c.bezierCurveTo(14, 16, 24, 6, 45, 6); c.bezierCurveTo(66, 6, 76, 16, 76, 35);
+    c.lineTo(78, 96); c.bezierCurveTo(78, 112, 70, 122, 45, 122); c.bezierCurveTo(20, 122, 12, 112, 12, 96);
     c.closePath(); c.fill();
-    c.lineWidth = 1.5; c.strokeStyle = '#090d16'; c.stroke();
+    c.lineWidth = 2; c.strokeStyle = '#090d16'; c.stroke();
 
-    c.fillStyle = 'rgba(15,23,42,0.85)';
+    c.strokeStyle = 'rgba(0,0,0,0.15)'; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(25, 8); c.bezierCurveTo(32, 26, 36, 36, 45, 36); c.bezierCurveTo(54, 36, 58, 26, 65, 8); c.stroke();
+
+    c.fillStyle = 'rgba(15,23,42,0.88)';
     c.beginPath();
-    c.moveTo(20, 44); c.bezierCurveTo(22, 35, 30, 32, 45, 32); c.bezierCurveTo(60, 32, 68, 35, 70, 44);
-    c.lineTo(71, 74); c.bezierCurveTo(71, 82, 64, 86, 45, 86); c.bezierCurveTo(26, 86, 19, 82, 19, 74);
-    c.closePath(); c.fill();
+    c.moveTo(20, 44); c.bezierCurveTo(22, 34, 30, 30, 45, 30); c.bezierCurveTo(60, 30, 68, 34, 70, 44);
+    c.lineTo(72, 74); c.bezierCurveTo(72, 84, 66, 88, 45, 88); c.bezierCurveTo(24, 88, 18, 84, 18, 74);
+    c.closePath(); c.fill(); c.strokeStyle = '#0f172a'; c.lineWidth = 1; c.stroke();
 
-    c.fillStyle = '#ffffff'; c.fillRect(16, 14, 10, 4); c.fillRect(64, 14, 10, 4);
-    c.fillStyle = isPlayer ? '#ff1111' : '#ff4400'; c.fillRect(18, 114, 12, 3); c.fillRect(60, 114, 12, 3);
+    c.strokeStyle = 'rgba(255,255,255,0.2)'; c.lineWidth = 2; c.beginPath(); c.moveTo(24, 42); c.quadraticCurveTo(32, 34, 45, 34); c.stroke();
+
+    c.fillStyle = '#ffffff'; c.fillRect(14, 12, 12, 5); c.fillRect(64, 12, 12, 5);
+
+    c.fillStyle = isPlayer ? '#ff1111' : '#ff4400';
+    c.fillRect(16, 116, 16, 4); c.fillRect(58, 116, 16, 4);
 
     c.fillStyle = '#ffffff'; c.font = '900 9px sans-serif'; c.textAlign = 'center';
-    c.fillText(name, 45, 62);
+    c.fillText(name, 45, 64);
 
     vehicleCacheCanvases[key] = cacheCanvas;
 }
@@ -477,7 +513,9 @@ function generateVehicleGraphicsCache(key, color, name, isPlayer = false) {
 function buildAllGraphicsCaches() {
     generateVehicleGraphicsCache('player', '#00e5ff', 'YOU', true);
     stageJobs.forEach((job, idx) => {
-        generateVehicleGraphicsCache(job.key + '_' + idx, job.color, job.name, false);
+        let col = job.color;
+        if (idx === 2) col = '#c084fc'; 
+        generateVehicleGraphicsCache(job.key + '_' + idx, col, job.name, false);
     });
 }
 buildAllGraphicsCaches();
@@ -488,29 +526,30 @@ let passedCarsCount = 0;
 let isPlaying = false;
 let isPaused = false; 
 let isBurning = false; 
+
 let lastTime = 0;
+let frameTimeAccumulator = 0; // Fixes frame spikes
+const targetFPSDt = 1 / 60;   // Locked strictly to perfect 60 FPS loop
+
 let roadLinesY = 0;
 let enemySpawnTimer = 0;
 let enemies = [];
 let particles = [];
 let sceneryItems = [];
 let lastSpawnLane = -1; 
-let animationFrameId = null; 
-
-let baseRoadSpeed = 560; 
-let playerSpeed = 590;
-let realGameStageLevel = 0; 
+let animationFrameId = null;
 
 const player = {
     x: 250, y: 520, 
     width: 58, height: 84, 
+    speed: 550, // Delta-time based precise movement speed
     movingLeft: false, movingRight: false
 };
 
 function updateScoreUI() {
     sbPass.innerText = `PASS: ${passedCarsCount}/10`;
     sbScore.innerText = `SCORE: ${score}`;
-    sbStage.innerText = `STAGE: ${realGameStageLevel + 1}`;
+    sbStage.innerText = `STAGE: ${currentStageIndex + 1}`;
 }
 
 function checkStageProgression() {
@@ -518,12 +557,7 @@ function checkStageProgression() {
     if (passedCarsCount >= 10) {
         passedCarsCount = 0;
         currentStageIndex = (currentStageIndex < stageJobs.length - 1) ? currentStageIndex + 1 : 0;
-        
-        realGameStageLevel++;
-        baseRoadSpeed = 560 + (realGameStageLevel * 140);
-        playerSpeed = 590 + (realGameStageLevel * 75);
-        
-        showRewardNotification("Congratulations! You won the awesome prize of this stage! 🔥");
+        showRewardNotification("تبریک! شما جایزه خفن این مرحله رو برنده شدید! 🔥");
     }
     updateScoreUI();
 }
@@ -537,33 +571,26 @@ function showRewardNotification(text) {
 
 function initScenery() {
     sceneryItems = [];
-    const colors = ['#ef4444', '#ec4899', '#eab308']; 
-    for (let y = -100; y < canvas.height + 100; y += 190) {
-        sceneryItems.push({ x: canvas.width * 0.04, y: y, color: colors[Math.floor(Math.random() * 3)] });
-        sceneryItems.push({ x: canvas.width * 0.96, y: y + 95, color: colors[Math.floor(Math.random() * 3)] });
+    for (let y = -100; y < canvas.height + 100; y += 120) {
+        sceneryItems.push({ x: canvas.width * 0.035, y: y });
+        sceneryItems.push({ x: canvas.width * 0.945, y: y + 60 });
     }
 }
 
-// Highly Optimized Linear Rendering for flower scenery elements
 function updateAndDrawScenery(speed, dt) {
-    ctx.fillStyle = '#1b3323';
+    ctx.fillStyle = '#1f442b';
     ctx.fillRect(0, 0, canvas.width * 0.08, canvas.height);
     ctx.fillRect(canvas.width * 0.92, 0, canvas.width * 0.08, canvas.height);
 
     const len = sceneryItems.length;
+    ctx.fillStyle = '#22c55e';
     for(let i=0; i<len; i++) {
         const item = sceneryItems[i];
         if (isPlaying && !isPaused && !isBurning) item.y += speed * dt;
-        if (item.y > canvas.height + 25) item.y = -25;
+        if (item.y > canvas.height + 40) item.y = -40;
 
-        ctx.fillStyle = item.color;
-        ctx.beginPath(); ctx.arc(item.x - 4, item.y, 5, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(item.x + 4, item.y, 5, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(item.x, item.y - 4, 5, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(item.x, item.y + 4, 5, 0, Math.PI * 2); ctx.fill();
-        
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath(); ctx.arc(item.x, item.y, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(item.x, item.y + 10); ctx.lineTo(item.x - 10, item.y + 30); ctx.lineTo(item.x + 10, item.y + 30); ctx.closePath(); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(item.x, item.y); ctx.lineTo(item.x - 7, item.y + 16); ctx.lineTo(item.x + 7, item.y + 16); ctx.closePath(); ctx.fill();
     }
 }
 
@@ -620,8 +647,7 @@ class EnemyCar {
         
         this.x = lanes[targetLaneIndex];
         this.y = -130;
-        
-        this.speed = baseRoadSpeed - 55 + (Math.random() * 60); 
+        this.speed = 490 + (currentStageIndex * 115); 
         this.passed = false;
         this.cacheKey = this.jobSpec.key + '_' + currentStageIndex;
     }
@@ -638,8 +664,8 @@ function handleEnemies(dt) {
     if (!isPaused && !isBurning) enemySpawnTimer += dt;
     
     let currentType = stageJobs[currentStageIndex].type;
-    let baseInterval = (currentType === 'SPEED_OBSTACLE' || currentType === 'CHAOS') ? 0.42 : 0.80 - (realGameStageLevel * 0.09);
-    const spawnInterval = Math.max(0.28, baseInterval);
+    let baseInterval = (currentType === 'SPEED_OBSTACLE' || currentType === 'CHAOS') ? 0.44 : 0.82 - (currentStageIndex * 0.08);
+    const spawnInterval = Math.max(0.32, baseInterval);
     
     if (enemySpawnTimer > spawnInterval && !isPaused && !isBurning) {
         enemies.push(new EnemyCar());
@@ -668,16 +694,13 @@ function handleEnemies(dt) {
     }
 }
 
-// Ultra sensitive collision matrix
 function intersects(x1, y1, w1, h1, x2, y2, w2, h2) {
-    return x1 - w1/2.02 < x2 + w2/2.02 && x1 + w1/2.02 > x2 - w2/2.02 && y1 - h1/2.02 < y2 + h2/2.02 && y1 + h1/2.02 > y2 - h2/2.02;
+    return x1 - w1/2.3 < x2 + w2/2.3 && x1 + w1/2.3 > x2 - w2/2.3 && y1 - h1/2.3 < y2 + h2/2.3 && y1 + h1/2.3 > y2 - h2/2.3;
 }
 
 function triggerCarBurnEffect() {
     isBurning = true;
-    player.movingLeft = false;
-    player.movingRight = false;
-    playCyberBurnSound();
+    playRetroDeathSound();
     
     let burnCounter = 0;
     const burnInterval = setInterval(() => {
@@ -698,32 +721,30 @@ function drawRoad(dt) {
 
     const leftLimit = canvas.width * 0.08;
     const rightLimit = canvas.width * 0.92 - 6;
+    const currentRoadSpeed = 520 + (currentStageIndex * 115);
 
-    updateAndDrawScenery(baseRoadSpeed, dt);
+    updateAndDrawScenery(currentRoadSpeed, dt);
 
     ctx.fillStyle = '#f59e0b';
     ctx.fillRect(leftLimit, 0, 6, canvas.height);
     ctx.fillRect(rightLimit, 0, 6, canvas.height);
 
     if (isPlaying && !isPaused && !isBurning) {
-        if (player.x - player.width / 1.95 <= leftLimit + 6 || player.x + player.width / 1.95 >= rightLimit) {
+        if (player.x - player.width / 2 <= leftLimit + 6 || player.x + player.width / 2 >= rightLimit) {
             triggerCarBurnEffect();
             return;
         }
     }
 
     ctx.fillStyle = '#ffffff';
-    if (!isPaused && !isBurning) roadLinesY = (roadLinesY + baseRoadSpeed * dt) % 70;
+    if (!isPaused && !isBurning) roadLinesY = (roadLinesY + currentRoadSpeed * dt) % 70;
 
-    const lineX1 = canvas.width * 0.38 - 1.5;
-    const lineX2 = canvas.width * 0.62 - 1.5;
     for (let y = roadLinesY - 70; y < canvas.height; y += 70) {
-        ctx.fillRect(lineX1, y, 3, 35);
-        ctx.fillRect(lineX2, y, 3, 35);
+        ctx.fillRect(canvas.width * 0.38 - 1.5, y, 3, 35);
+        ctx.fillRect(canvas.width * 0.62 - 1.5, y, 3, 35);
     }
 }
 
-// Snappy Instant Countdown Timer System (700ms interval for an elegant, snappy feel)
 function startCountdown() {
     welcomeScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
@@ -736,15 +757,21 @@ function startCountdown() {
     function nextTick() {
         if (current < states.length) {
             countdownText.innerText = states[current];
+            countdownText.classList.remove('animate');
+            void countdownText.offsetWidth; 
+            countdownText.classList.add('animate');
             current++;
-            setTimeout(nextTick, 700); 
+            setTimeout(nextTick, 850);
         } else {
             countdownOverlay.style.display = 'none';
             playBeep();
             isPlaying = true; isPaused = false; isBurning = false;
             pauseBtn.innerText = "Pause"; pauseBtn.style.display = 'block';
+            
             lastTime = performance.now();
-            musicTimer = 0; musicStep = 0;
+            frameTimeAccumulator = 0;
+            audioNodeScheduledTime = audioCtx.currentTime;
+            
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
             animationFrameId = requestAnimationFrame(loop);
         }
@@ -758,6 +785,7 @@ pauseBtn.addEventListener('click', () => {
     pauseBtn.innerText = isPaused ? "Resume" : "Pause";
     if (!isPaused) { 
         lastTime = performance.now(); 
+        frameTimeAccumulator = 0;
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
         animationFrameId = requestAnimationFrame(loop); 
     }
@@ -773,12 +801,7 @@ function gameOver() {
 function resetGame() {
     if (audioCtx.state === 'suspended') { audioCtx.resume(); }
     score = 0; currentStageIndex = 0; passedCarsCount = 0; lastSpawnLane = -1;
-    realGameStageLevel = 0;
-    baseRoadSpeed = 560;
-    playerSpeed = 590;
     isBurning = false;
-    player.movingLeft = false;
-    player.movingRight = false;
     updateScoreUI();
     
     resizeCanvas();
@@ -791,19 +814,34 @@ function resetGame() {
 function loop(currentTime) {
     if (!isPlaying || isPaused) return;
 
-    let dt = (currentTime - lastTime) / 1000;
-    if (dt > 0.05) dt = 0.016; 
+    let delta = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
 
-    processInlineMusic(dt);
+    // Prevent sudden huge leaps (max clamp to avoid breakdown during Telegram hiccups)
+    if (delta > 0.1) delta = 0.1;
+    frameTimeAccumulator += delta;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawRoad(dt);
+    // Strict 60FPS tick controller
+    while (frameTimeAccumulator >= targetFPSDt) {
+        scheduleNextSynthNote(); // Sound sync tick
 
-    if (isPlaying && !isPaused && !isBurning) {
-        if (player.movingLeft) player.x -= playerSpeed * dt;
-        if (player.movingRight) player.x += playerSpeed * dt;
+        if (isPlaying && !isPaused && !isBurning) {
+            // Perfectly calculated delta-time smooth side movement
+            if (player.movingLeft) player.x -= player.speed * targetFPSDt;
+            if (player.movingRight) player.x += player.speed * targetFPSDt;
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            particles[i].update(targetFPSDt);
+            if (particles[i].alpha <= 0) particles.splice(i, 1);
+        }
+
+        frameTimeAccumulator -= targetFPSDt;
     }
+
+    // Drawing functions execute outside lock to preserve display smoothness
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawRoad(delta);
 
     if (!isBurning) {
         const pCache = vehicleCacheCanvases['player'];
@@ -812,36 +850,38 @@ function loop(currentTime) {
         }
     }
 
-    for (let i = particles.length - 1; i >= 0; i--) {
-        particles[i].update(dt); particles[i].draw();
-        if (particles[i].alpha <= 0) particles.splice(i, 1);
+    for (let i = 0; i < particles.length; i++) {
+        particles[i].draw();
     }
 
-    handleEnemies(dt);
-    if (isPlaying && !isPaused) animationFrameId = requestAnimationFrame(loop);
+    handleEnemies(delta);
+
+    if (isPlaying && !isPaused) {
+        animationFrameId = requestAnimationFrame(loop);
+    }
 }
 
 const btnLeft = document.getElementById('btnLeft');
 const btnRight = document.getElementById('btnRight');
 
-btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; player.movingRight = false; playClickSound(); } });
+btnLeft.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingLeft = true; playClickSound(); } });
 btnLeft.addEventListener('mouseup', () => player.movingLeft = false);
 btnLeft.addEventListener('mouseleave', () => player.movingLeft = false);
 btnLeft.addEventListener('touchstart', (e) => { 
     if (e.cancelable) e.preventDefault(); 
-    if(!isPaused && !isBurning) { player.movingLeft = true; player.movingRight = false; playClickSound(); } 
+    if(!isPaused && !isBurning) { player.movingLeft = true; playClickSound(); } 
 }, { passive: false });
 btnLeft.addEventListener('touchend', (e) => {
     if (e.cancelable) e.preventDefault();
     player.movingLeft = false;
 }, { passive: false });
 
-btnRight.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingRight = true; player.movingLeft = false; playClickSound(); } });
+btnRight.addEventListener('mousedown', (e) => { if(!isPaused && !isBurning) { player.movingRight = true; playClickSound(); } });
 btnRight.addEventListener('mouseup', () => player.movingRight = false);
 btnRight.addEventListener('mouseleave', () => player.movingRight = false);
 btnRight.addEventListener('touchstart', (e) => { 
     if (e.cancelable) e.preventDefault(); 
-    if(!isPaused && !isBurning) { player.movingRight = true; player.movingLeft = false; playClickSound(); } 
+    if(!isPaused && !isBurning) { player.movingRight = true; playClickSound(); } 
 }, { passive: false });
 btnRight.addEventListener('touchend', (e) => {
     if (e.cancelable) e.preventDefault();
